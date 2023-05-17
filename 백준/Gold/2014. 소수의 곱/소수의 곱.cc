@@ -1960,7 +1960,7 @@ void solve() {
         }
         for (auto y : a) {
             int z = x*y; 
-            if (z >= (1ll<<31)) continue;
+            if (z >= (1ll<<31)) break;
             if (s.count(z)) continue;
             s.insert(z);
         }
