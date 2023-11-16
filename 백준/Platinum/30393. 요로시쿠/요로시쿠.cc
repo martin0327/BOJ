@@ -2006,21 +2006,16 @@ void solve() {
     int n,m;
     ri(n,m);
     vi a(n); ri(a);
-    if (sum(a)==1) {
+    mint s = sum(a);
+    if (s.val()==1) {
         po(0);
         return;
     }
-    mint s = sum(a);
-
-    function<mint(mint)> nc2 = [&] (mint x) {
-        mint ret = x*(x-1)/2;
-        return ret;
-    };
     
-    mint ans = 0;
+    mint ans = 0, inv2 = mint(2).inv();
     for (mint x : a) {
-        ans += nc2(x);
+        ans += x*(x-1)*inv2;
     }
-    ans *= nc2(mint(m))/nc2(s);
+    ans *= (m*(m-1)) / (s*(s-1));
     po(ans);
 }
