@@ -2073,7 +2073,8 @@ void solve() {
     vi lo(n), hi(n);
     iota(lo.begin(), lo.end(), 0ll);
     iota(hi.begin(), hi.end(), 0ll);
-    mint ten = 10;
+    vm tpow(n+1,1);
+    for (int i=1; i<=n; i++) tpow[i] = tpow[i-1] * 10;
     for (auto [w,u,v] : edges) {
         int lu = d.leader(u);
         int lv = d.leader(v);
@@ -2083,11 +2084,11 @@ void solve() {
         int sz_v = d.size(v);
         {
             int l = lo[lu], r = hi[lu];
-            seg.apply(l,r+1,make_pair(ten.pow(sz_v), w*ten.pow(sz_v-1) + hv));
+            seg.apply(l,r+1,make_pair(tpow[sz_v], w*tpow[sz_v-1] + hv));
         }
         {
             int l = lo[lv], r = hi[lv];
-            seg.apply(l,r+1,make_pair(ten.pow(sz_u), w*ten.pow(sz_u-1) + hu));
+            seg.apply(l,r+1,make_pair(tpow[sz_u], w*tpow[sz_u-1] + hu));
         }
         int l = min(lo[lu],lo[lv]);
         int r = max(hi[lu],hi[lv]);
