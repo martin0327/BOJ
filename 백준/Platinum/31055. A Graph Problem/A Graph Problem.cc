@@ -2034,17 +2034,17 @@ void solve() {
         int idx = n;
         dsu d(n);
         vvi adj(2*n-1);
-        vi mp(2*n-1);
-        for (int i=0; i<n; i++) mp[i] = i;
+        vi top(2*n-1);
+        for (int i=0; i<n; i++) top[i] = i;
         for (auto [w,u,v] : edges) {
             int lu = d.leader(u);
             int lv = d.leader(v);
-            int uu = mp[lu];
-            int vv = mp[lv];
-            adj[idx].push_back(uu);
-            adj[idx].push_back(vv);
+            int tu = top[lu];
+            int tv = top[lv];
+            adj[idx].push_back(tu);
+            adj[idx].push_back(tv);
             d.merge(u,v);
-            mp[d.leader(u)] = idx++;
+            top[d.leader(u)] = idx++;
         }
         function<void(int)> f = [&] (int u) {
             if (u < n) ord.push_back(u);
@@ -2054,13 +2054,9 @@ void solve() {
         };
         f(idx-1);
     }
-    vi temp = ord;
-    for (auto &x : temp) x++;
     map<int,int> mp;
-    map<int,int> inv;
     for (int i=0; i<n; i++) {
         mp[ord[i]] = i;
-        inv[i] = ord[i];
     }
     for (auto &[w,u,v] : edges) {
         u = mp[u];
@@ -2093,9 +2089,9 @@ void solve() {
         int l = min(lo[lu],lo[lv]);
         int r = max(hi[lu],hi[lv]);
         d.merge(u,v);
-        int uv = d.leader(u);
-        lo[uv] = l;
-        hi[uv] = r;
+        lu = d.leader(u);
+        lo[lu] = l;
+        hi[lu] = r;
     }
 
     for (int i=0; i<n; i++) {
