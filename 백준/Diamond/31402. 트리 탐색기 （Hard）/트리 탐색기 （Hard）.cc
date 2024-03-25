@@ -2005,19 +2005,12 @@ F id () {
     return 0;
 }
 
-int k1, k2;
-bool g1(S s) {
-    int cnt = s.second;
-    if (s.first > 0) cnt = 0;
-    return cnt < k1;
-}
-
-bool g2(S s) {
-    int cnt = s.second;
-    if (s.first > 0) cnt = 0;
-    return cnt < k2;
-}
-
+// int glb_k = inf;
+// bool g(S s) {
+//     int cnt = s.second;
+//     if (s.first > 0) cnt = 0;
+//     return cnt < glb_k;
+// }
 
 void solve() {
     int n,q;
@@ -2053,10 +2046,9 @@ void solve() {
 
     using lzseg = lazy_segtree<S, op, e, F, mapping, composition, id>;
     lzseg seg(n);
-    for (int i=0; i<n; i++) {
+    for (int i=1; i<n; i++) {
         seg.set(enter[i], {dep[i],1});
     }
-    seg.set(0,e());
 
     auto dbg = [&] (lzseg &seg) {
         vi seg_dbg;
@@ -2067,25 +2059,12 @@ void solve() {
     };
 
     vi expand(n);
-    expand[0] = 1;
-    for (auto v : adj[0]) {
-        seg.set(enter[v], {0,1});
-    }
-    
 
     while (q--) {
         string t; ri(t);
         if (t=="toggle") {
-            if (expand[cur]) {
-                if (enter[cur]+1 <= exit[cur]) {
-                    seg.apply(enter[cur]+1,exit[cur],1);
-                }
-            }
-            else {
-                if (enter[cur]+1 <= exit[cur]) {
-                    seg.apply(enter[cur]+1,exit[cur],-1);
-                }
-            }
+            if (expand[cur]) seg.apply(enter[cur]+1,exit[cur],1);
+            else seg.apply(enter[cur]+1,exit[cur],-1);
             expand[cur] ^= 1;
         }
         else {
@@ -2097,28 +2076,13 @@ void solve() {
                     auto [mn,cnt] = seg.prod(u,n);
                     chmin(k,cnt);
                 }
-                k1 = k;
-                int ans = seg.max_right<g1>(u);
-                // debug(u,k);
-                // dbg(seg);
-                // debug(ans);
-                // debug("");
-                cur = inv[ans];
+                int v = seg.max_right(u, [&] (S s) {
+                    int cnt = s.second;
+                    if (s.first > 0) cnt = 0;
+                    return cnt < k;
+                });
+                cur = inv[v];
                 po(cur+1);
-                // int lo = u, hi = n-1, ans = u;
-                // // g1 takes k as argument
-                // while (lo <= hi) {
-                //     int mid = (lo+hi)/2;
-                //     auto [mn, cnt] = seg.prod(u,mid+1);
-                //     // max_right
-                //     if (cnt >= k) {
-                //         ans = mid;
-                //         hi = mid - 1;
-                //     }
-                //     else lo = mid + 1;
-                // }
-                // cur = inv[ans];
-                // po(cur+1);
             }
             else if (k < 0) {
                 int u = enter[cur];
@@ -2128,35 +2092,18 @@ void solve() {
                     auto [mn,cnt] = seg.prod(1,u+1);
                     chmin(k,cnt);
                 }
-                k2 = k;
-                int ans = seg.min_left<g2>(u+1);
-                ans--;
-                // debug(u,k);
-                // dbg(seg);
-                // debug(ans);
-                // debug("");
-                cur = inv[ans];
+                int v = seg.min_left(u+1, [&] (S s) {
+                    int cnt = s.second;
+                    if (s.first > 0) cnt = 0;
+                    return cnt < k;
+                });
+                v--;
+                cur = inv[v];
                 po(cur+1);
-
-                // int lo = 1, hi = u, ans = u;
-                // while (lo <= hi) {
-                //     int mid = (lo+hi)/2;
-                //     auto [mn, cnt] = seg.prod(mid,u+1);
-                //     // min_left
-                //     if (cnt >= k) {
-                //         ans = mid;
-                //         lo = mid + 1;
-                //     }
-                //     else hi = mid - 1;
-                // }
-                // cur = inv[ans];
-                // po(cur+1);
-
             }
             else {
                 po(cur+1);
             }
         }
     }
-
 }
