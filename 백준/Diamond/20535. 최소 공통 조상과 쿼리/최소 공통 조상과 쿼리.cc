@@ -2048,25 +2048,22 @@ void solve() {
             int p = lca.query(u,v);
             cadj[p].push_back(u);
         }
-        // debug(a);
-        // debug(cadj);
         int ans = 0;
         function<int(int)> g = [&] (int u) {
             vi b;
             for (auto v : cadj[u]) {
                 b.push_back(g(v));
             }
-            int t = 0;
+            int tot = sum(b), s = 0;
             for (auto x : b) {
-                ans += h[u] * t * x;
-                t += x;
+                s += h[u] * x * (tot - x);
             }
-            if (check[u]) ans += h[u] * t;
-            return t + check[u];
+            ans += s / 2;
+            if (check[u]) ans += h[u] * tot;
+            return tot + check[u];
         };
         g(a[0]);
         po(ans);
-
         for (auto u : a) {
             cadj[u].clear();
             check[u] = 0;
