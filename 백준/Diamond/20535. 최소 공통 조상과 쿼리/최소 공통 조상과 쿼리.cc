@@ -2010,63 +2010,72 @@ signed main() {
 
 void solve() {
     int n,q; ri(n,q);
-    vvi adj(n);
+    vvi adj(n); // original adjacency list
     for (int i=1; i<n; i++) {
         int p; ri(p); p--;
         adj[p].push_back(i);
     }
-    vvi cadj(n);
-    vector<bool> check(n);
-    LCA lca(adj);
-    vi h(n);
+    vvi cadj(n); // adjacency list of a compressed tree
+    vector<bool> check(n); // check[u] = 1 if u is in S
+    LCA lca(adj); // precompute LCA : O(nlogn)
+    vi L(n); // L[u] = level of node u
     function<void(int,int)> f = [&] (int u, int d) {
-        h[u] = d;
+        L[u] = d;
         for (auto v : adj[u]) {
             f(v,d+1);
         }
     };
-    f(0,0);
+    f(0,0); // O(n)
 
     while (q--) {
-        int m; ri(m);
-        vi a(m); ri(a);
-        for (auto &x : a) {
-            x--;
-            check[x] = 1;
+        int k; ri(k); // number of vertices for each query
+        vi a(k); ri(a);
+        for (auto &u : a) {
+            u--;
+            check[u] = 1; // check[u] = 1 if u is in S
         }
 
-        sort(a.begin(), a.end(), [&] (int x, int y) {return lca.idx[x] < lca.idx[y];});
-        for (int i=1; i<m; i++) {
-            a.push_back(lca.query(a[i],a[i-1]));
+        // line 2039 ~ 2044 : O(klogk)
+        sort(a.begin(), a.end(), [&] (int x, int y) {return lca.idx[x] < lca.idx[y];}); // sort in order of Euler index
+        for (int i=1; i<k; i++) {
+            a.push_back(lca.query(a[i],a[i-1])); // push lca of each pair of adjacent vertices 
         }
-        a = get_unique(a);
-        sort(a.begin(), a.end(), [&] (int x, int y) {return lca.idx[x] < lca.idx[y];});
-        m = a.size();
-        for (int i=1; i<m; i++) {
+        a = get_unique(a); // get unique vertices (based on sorting, not hash)
+        sort(a.begin(), a.end(), [&] (int x, int y) {return lca.idx[x] < lca.idx[y];}); // sort in order of Euler index
+
+        k = a.size();
+        for (int i=1; i<k; i++) { // O(k)
             int u = a[i];
             int v = a[i-1];
-            int p = lca.query(u,v);
+            int p = lca.query(u,v); // lca of each pair of adjacent vertices is the direct ancestor of a[i] in the compressed tree
             cadj[p].push_back(u);
         }
+        // current compressed adjacency list is O(k)
+
         int ans = 0;
-        function<int(int)> g = [&] (int u) {
+        function<int(int)> g = [&] (int u) { 
             vi b;
-            for (auto v : cadj[u]) {
-                b.push_back(g(v));
-            }
+            for (auto v : cadj[u]) b.push_back(g(v));
             int tot = sum(b), s = 0;
-            for (auto x : b) {
-                s += h[u] * x * (tot - x);
-            }
-            ans += s / 2;
-            if (check[u]) ans += h[u] * tot;
+            for (auto x : b) s += x * (tot - x);
+            s /= 2;
+            if (check[u]) s += tot;
+            ans += L[u] * s;
             return tot + check[u];
         };
-        g(a[0]);
+        g(a[0]); // a tree DP in a form of simple DFS O(k)
         po(ans);
-        for (auto u : a) {
-            cadj[u].clear();
+
+        // need to clear complressed adjacencly list and check array : O(k)
+        for (auto u : a) { 
+            cadj[u].clear(); 
             check[u] = 0;
         }
     }
+    
+    // pre-computing for LCA : O(nlogn)
+    // number of queries : O(q)
+    // processing each query : O(k_i*log(k_i)) 
+    // Note that sum O(k_i*log(k_i) <= O(sum_k * log(sum_k))
+    // total complexity : O(nlogn + q + (sum_k * log(sum_k))
 }
