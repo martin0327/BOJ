@@ -2029,20 +2029,15 @@ signed main() {
 }
 
 void solve() {
-    // init_spf(3e6);
-    // for (auto x : primes) {
-    //     if (x > 2e6) {
-    //         debug(x);
-    //         break;
-    //     }
-    // }
     int n; ri(n);
     vi a(n); ri(a);
-    // int mx = max(a);
     int mx = 2e6+3;
     vi cnt(mx+1);
     for (auto x : a) cnt[x]++;
-    auto b = get_unique(a);
+    vi b;
+    for (int i=0; i<=mx; i++) {
+        if (cnt[i]) b.push_back(i);
+    }
     if (b.front() != 0) {
         po(0);
         return;
