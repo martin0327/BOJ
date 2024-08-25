@@ -2039,7 +2039,7 @@ void solve() {
         else if (c == '(') {
             t += "((";
         }
-        else if (c == '))') {
+        else if (c == ')') {
             t += "))";
         }
         else t += c;
