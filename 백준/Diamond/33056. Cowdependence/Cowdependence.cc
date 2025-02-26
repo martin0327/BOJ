@@ -2035,7 +2035,7 @@ void solve() {
     for (int i=0; i<n; i++) {
         b[a[i]].push_back(i);
     }
-    int cut = sqrt(n)/2;
+    int cut = sqrt(n);
     vvi b1, b2;
     for (int i=0; i<=n; i++) {
         int sz = b[i].size();
@@ -2043,9 +2043,7 @@ void solve() {
         if (sz > cut) b1.push_back(b[i]);
         else b2.push_back(b[i]);
     }
-    // debug(b);
-    // debug(b1);
-    // debug(b2);
+
     vi ans(n+1);
     for (auto &b : b1) {
         vi jump(n);
@@ -2055,7 +2053,6 @@ void solve() {
                 if (a[i] == tg) last = i;
                 jump[i] = last;
             }
-            // debug(tg,jump);
         }
         for (int d=1; d<=n; d++) {
             int cur = b.front(), cnt = 0;
@@ -2076,12 +2073,12 @@ void solve() {
             while (lo <= hi) {
                 int mid = (lo+hi)/2;
                 int d = mid;
-                int cur = b.front(), cnt = 1;
-                while (true) {
-                    auto it = upper_bound(b.begin(), b.end(), cur+d);
-                    if (it == b.end()) break;
-                    cur = *it;
-                    cnt++;
+                int cnt = 1, cur = b[0];
+                for (int i=0; i<sz; i++) {
+                    if (b[i]-cur > d) {
+                        cur = b[i];
+                        cnt++;
+                    }
                 }
                 if (cnt >= grp) {
                     if (cnt == grp) tg = mid;
@@ -2098,8 +2095,7 @@ void solve() {
     for (int i=n-1; i>=1; i--) {
         suf[i] += suf[i+1];
     }
-    // debug(ans);
-    // debug(suf);
+
     for (int i=1; i<=n; i++) {
         ans[i] += suf[i];
     }
