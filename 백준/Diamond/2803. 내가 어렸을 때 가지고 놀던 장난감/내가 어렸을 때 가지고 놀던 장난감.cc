@@ -2041,6 +2041,7 @@ void solve() {
         }
         a[mask]++;
     }
+    int whole = (1<<m) - 1;
 
     vi dp(a.begin(), a.end());
     for (int i=0; i<m; i++) {
@@ -2053,8 +2054,8 @@ void solve() {
     mint ans = 0;
     for (int mask=0; mask<(1<<m); mask++) {
         auto d = mint(2).pow(dp[mask]);
-        if ((m-popcount(mask))&1) ans -= d;
-        else ans += d;
+        if ((popcount(mask)&1) == (popcount(whole)&1)) ans += d;
+        else ans -= d;
     }
     po(ans);
 }
