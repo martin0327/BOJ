@@ -2012,13 +2012,13 @@ void solve() {
     int n,k; ri(n,k);
     vi a(n); ri(a);
     vi ans(3);
-    int m = 20, whole = (1<<m) - 1;
+    int m = 20, z = (1<<m) - 1;
     vi cnt(1<<m), dp1(1<<m), dp2(1<<m);
     for (auto &x : a) {
         ans[2] += cnt[k^x];
         cnt[x]++;
         if ((x&k)==k) dp1[x]++;
-        if ((x&k)==x) dp2[x^whole]++;
+        if ((x&k)==x) dp2[x^z]++;
     }
 
     for (int i=0; i<m; i++) {
@@ -2031,13 +2031,12 @@ void solve() {
     }
     for (auto &x : a) {
         if ((x&k) == k) {
-            int y = ((whole^x) | k);
+            int y = ((z^x) | k);
             ans[0] += dp1[y];
             if (x == k) ans[0]--;
         }
         if ((x&k) == x) {
-            int y = (x^k)^whole;
-            // debug(x,y,dp2[y^whole]);
+            int y = (x^k)^z;
             ans[1] += dp2[y];
             if (x == k) ans[1]--;
         }
