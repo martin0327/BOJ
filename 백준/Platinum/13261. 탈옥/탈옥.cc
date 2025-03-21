@@ -2048,7 +2048,7 @@ void solve() {
             f(l,mid-1,s,idx);
             f(mid+1,r,idx,e);
         };
-        f(j,n,j-1,n-1);
+        f(j,n,j-1,n);
         swap(dp,ndp);
     }
     int ans = dp.back();
