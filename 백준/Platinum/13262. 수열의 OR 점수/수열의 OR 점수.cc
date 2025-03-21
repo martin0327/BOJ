@@ -2035,7 +2035,6 @@ void solve() {
             }
             int mid = (l+r)/2;
             int mx = -1, idx = -1;
-            debug(l,r,s,e);
             for (int j=s; j<=min(e,mid-1); j++) {
                 int v = dp[j] + C[j+1][mid];
                 if (v > mx) {
