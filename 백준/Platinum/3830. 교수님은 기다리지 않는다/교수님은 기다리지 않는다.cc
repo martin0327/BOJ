@@ -1999,14 +1999,7 @@ signed main() {
     io_util();
     mint::set_mod(998244353);
     // mint::set_mod(1e9+7);
-    int tc = 1;
-    while (true) {
-        if (!solve()) break;
-    }
-    // for (int i=1; i<=tc; i++) {
-    //     // cout << "Case #" << i << ": ";
-    //     solve();
-    // }
+    while (solve()) {}
     return 0;
 }
 
