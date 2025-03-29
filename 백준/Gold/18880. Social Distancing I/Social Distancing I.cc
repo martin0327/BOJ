@@ -2037,16 +2037,11 @@ const int inf = 2e18;
 void solve() {
     int n; ri(n);
     string s; ri(s);
-    // vi a = {-inf};
     vi a;
     for (int i=0; i<n; i++) {
         if (s[i] == '1') a.push_back(i);
     }
-    int t = inf;
-    for (int i=1; i<a.size(); i++) {
-        chmin(t, a[i]-a[i-1]);
-    }
-    // a.push_back(inf);
+    
     int lo = 1, hi = n-1, ans = -1;
     while (lo <= hi) {
         int mid = (lo+hi)/2;
@@ -2055,11 +2050,9 @@ void solve() {
         for (auto &x : a) b.push_back(x);
         b.push_back(n-1+mid);
         int m = b.size();
-        // debug(b);
         vti3 t2,t1;
         for (int i=1; i<m; i++) {
             int l = b[i-1], r = b[i];
-            // debug(r-l,mid);
             if (r-l >= 3*mid) {
                 cnt += 2;
                 t2.push_back({l,r,r-l});
@@ -2069,23 +2062,16 @@ void solve() {
                 t1.push_back({l,r,r-l});
             }
         }
-        // debug(cnt,mid);
-        // if (a[0] >= 2*mid) cnt += 2;
-        // else if (a[0] >= mid) cnt++;
-        // if (n-1 - a.back() >= 2*mid) cnt += 2;
-        // if (n-1 - a.back() >= mid) cnt ++;
-        // debug(mid);
-        // debug(b);
-        // debug(cnt);
-        // debug(t1);
-        // debug(t2);
         if (cnt >= 2) {
             ans = mid; 
             lo = mid + 1;
         }
         else hi = mid - 1;
     }
-    chmin(ans,t);
+
+    for (int i=1; i<a.size(); i++) {
+        chmin(ans, a[i]-a[i-1]);
+    }
     po(ans);
 
 }
