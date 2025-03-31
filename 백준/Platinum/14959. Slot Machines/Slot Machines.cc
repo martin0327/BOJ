@@ -2012,61 +2012,12 @@ const int inf = 2e18;
 void solve() {
     int n; ri(n); 
     vi a(n); ri(a);
-    // debug(n);
-    // debug(a[0]);
-    // int n = rng() % 100000;
-    // vi a(n);
-    {
-        // n = 100000;
-        // // int k = rng() % 1000;
-        // int k = 1;
-        // a = vi(k);
-        // int mod = 998244353;
-        // for (int i=0; i<k; i++) {
-        //     a[i] = rng() % mod;
-        // }
-        // int p = rng() % 1000;
-        // vi b(p);
-        // for (int i=0; i<p; i++) {
-        //     b[i] = rng() % mod;
-        // }
-        // for (int i=0; ;) {
-        //     if (a.size() == n) break;
-        //     a.push_back(b[i]);
-        //     i = (i+1) % p;
-        // }
-        // debug(k,p);
-    }
-
     reverse(a);
     auto z = z_algorithm(a);
     int min_pk = inf, min_p = inf;
     for (int i=1; i<n; i++) {
-        int p,k,pk;
-        if (z[i] >= i) {
-            // int last = i;
-            // for (int j=i; j<n; j+=i) {
-            //     if (z[j] >= i) last = j;
-            //     else break;
-            // }
-            // int idx = last+i-1;
-            // for (int j=0; j<i; j++) {
-            //     if (last+i+j >= n) break;
-            //     if (a[last+i+j] == a[j]) idx = last+i+j;
-            //     else break;
-            // }
-            // p = i;
-            // k = n - 1 - idx;
-            // pk = p+k;
-            p = i;
-            k = n - (i+z[i]);
-            pk = p+k;
-        }
-        else {
-            p = i;
-            k = n - (i+z[i]);
-            pk = p+k;
-        }
+        int p = i, k = n-(i+z[i]);
+        int pk = p+k;
         if (pk < min_pk) {
             min_pk = pk;
             min_p = p;
@@ -2075,7 +2026,7 @@ void solve() {
             chmin(min_p, p);
         }
     }
-    // assert(min_p != inf);
+    assert(min_p != inf);
     vi ans = {min_pk - min_p, min_p};
     if (min_p == inf) {
         ans = {n-1,1};
