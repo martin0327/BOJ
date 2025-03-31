@@ -2044,21 +2044,23 @@ void solve() {
     for (int i=1; i<n; i++) {
         int p,k,pk;
         if (z[i] >= i) {
-            int last = i;
-            for (int j=i; j<n; j+=i) {
-                if (z[j] >= i) last = j;
-                else break;
-            }
-            int idx = last+i-1;
-            for (int j=0; j<i; j++) {
-                if (last+i+j >= n) break;
-                if (a[last+i+j] == a[j]) idx = last+i+j;
-                else break;
-            }
+            // int last = i;
+            // for (int j=i; j<n; j+=i) {
+            //     if (z[j] >= i) last = j;
+            //     else break;
+            // }
+            // int idx = last+i-1;
+            // for (int j=0; j<i; j++) {
+            //     if (last+i+j >= n) break;
+            //     if (a[last+i+j] == a[j]) idx = last+i+j;
+            //     else break;
+            // }
+            // p = i;
+            // k = n - 1 - idx;
+            // pk = p+k;
             p = i;
-            k = n - 1 - idx;
+            k = n - (i+z[i]);
             pk = p+k;
-            
         }
         else {
             p = i;
