@@ -2042,7 +2042,7 @@ void solve() {
         if (s[i] == '1') a.push_back(i);
     }
     
-    int lo = 1, hi = n-1, ans = -1;
+    int lo = 1, hi = n-1, ans = inf;
     while (lo <= hi) {
         int mid = (lo+hi)/2;
         int cnt = 0;
@@ -2050,17 +2050,8 @@ void solve() {
         for (auto &x : a) b.push_back(x);
         b.push_back(n-1+mid);
         int m = b.size();
-        vti3 t2,t1;
         for (int i=1; i<m; i++) {
-            int l = b[i-1], r = b[i];
-            if (r-l >= 3*mid) {
-                cnt += 2;
-                t2.push_back({l,r,r-l});
-            }
-            else if (r-l >= 2*mid) {
-                cnt++;
-                t1.push_back({l,r,r-l});
-            }
+            cnt += (b[i] - b[i-1]) / mid - 1;
         }
         if (cnt >= 2) {
             ans = mid; 
@@ -2073,5 +2064,4 @@ void solve() {
         chmin(ans, a[i]-a[i-1]);
     }
     po(ans);
-
 }
