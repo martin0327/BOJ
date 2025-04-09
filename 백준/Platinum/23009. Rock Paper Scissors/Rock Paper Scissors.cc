@@ -2015,11 +2015,11 @@ signed main() {
 void solve() {
     ld W,E;
     ri(W,E);
-    // W = 500, E = 0;
+    // W = 500, E = 500;
     int n = 61;
     Vec<3,ld> dp(n,n,n);
     Vec<3,int> vis(n,n,n);
-    ld base = (W+E)/3;
+    ld base = (W+E)/3.0;
     // dp[1][0][0] = dp[0][1][0] = dp[0][0][1] = (W+E)/3;
     function<ld(int,int,int)> f = [&] (int r, int s, int p) {
         ld ret = 0;
@@ -2051,8 +2051,14 @@ void solve() {
         return abs(x-y) < eps;
     };
     string ans;
-    while (r+s+p > 0) {
+    while (true) {
         int m = r+s+p;
+        if (m == 1) {
+            if (r) ans += 'R';
+            else if (s) ans += 'S';
+            else ans += 'P';
+            break;
+        }
         if (r > 0 && eq(f(r-1,s,p) + (p*W+s*E)/(m-1), f(r,s,p)))  {
             ans += 'R';
             r--;
@@ -2067,6 +2073,7 @@ void solve() {
         }
     }
     reverse(ans.begin(), ans.end());
+    assert(ans.size() == 60);
     po(ans);
     
 
