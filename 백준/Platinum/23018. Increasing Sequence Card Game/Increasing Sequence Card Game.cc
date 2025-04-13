@@ -2027,19 +2027,27 @@ signed main() {
     }
     return 0;
 }
-using S = ld;
-S op(S x, S y) { return x+y; }
-S e() { return 0.0; }
+
+constexpr ld GAMMA = 0.57721566490153286060651209; // Euler-Mascheroni constant
+
+ld f(long long n) {
+    if (n == 0) return 0.0;
+    return log(n) + GAMMA;
+}
+
 void solve() {
     int n; ri(n);
-    // fenwick_tree<ld> fen(n+1);
-    segtree<S,op,e> seg(n+1);
-    for (int i=1; i<=n; i++) {
-        // ld val = fen.sum(0,i) / i + 1;
-        ld val = (seg.prod(0,i) / i) + 1;
-        seg.set(i,val);
+    if (n <= 1e7) {
+        ld cum = 0, ans = 0;
+        for (int i=1; i<=n; i++) {
+            ld val = (cum / i) + 1;
+            cum += val;
+            ans = val;
+        }
+        po(ans);
     }
-    auto ans = seg.get(n);
-    po(ans);
-
+    else {
+        auto ans = f(n);
+        po(ans);
+    }
 }
