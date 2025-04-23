@@ -2041,17 +2041,12 @@ void solve() {
     int n; ri(n);
     string s; ri(s);
     auto z = z_algorithm(s);
-    // vi a(n);
     lazy_segtree<S,op,e,F,mapping,composition,id> seg(n);
     for (int i=0; i<n; i++) {
-        if (z[i] >= 0) {
+        if (z[i] > 0) {
             seg.apply(i,min(n,i+z[i]),i);
-            // for (int j=i; j<min(n,i+z[i]); j++) {
-            //     chmax(a[j], i);
-            // }
         }
     }
-    // int ans = sum(a);
     int ans = 0;
     for (int i=0; i<n; i++) ans += seg.get(i);
     po(ans);
