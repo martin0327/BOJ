@@ -2010,7 +2010,7 @@ signed main() {
 
 void solve() {
     int x; ri(x);
-    vi a = {60,70,80,90,101};
+    vi a = {60,70,80,90};
     string s = "FDCBA";
     auto it = upper_bound(a.begin(), a.end(), x);
     char ans = s[it-a.begin()];
