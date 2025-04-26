@@ -2059,12 +2059,11 @@ void solve() {
     vp a(n);
     for (auto &[x,y] : a) ri(x,y);
     vi cx;
-    map<int,vp> mp1, mp2;
+    map<int,vp> mp;
     for (int i=0; i<n; i++) {
         auto [x,y] = a[i];
         cx.push_back(x);
-        mp1[y].push_back({x,i});
-        mp2[-y].push_back({x,i});
+        mp[y].push_back({x,i});
     }
     
     cx = get_unique(cx);
@@ -2084,14 +2083,11 @@ void solve() {
 
         int py = rev?inf:-inf;
 
-        map<int,vp> mp = (rev)?mp2:mp1;
-
         auto update = [&] (int d, int i) {
             chmin(ans[i], d);
         };
 
-        for (auto &[yy,v] : mp) {
-            int y = rev?-yy:yy;
+        auto g = [&] (int y, vp &v) {
             asort(v);
             for (int j=0; j<v.size(); j++) {
                 auto [x,i] = v[j];
@@ -2126,8 +2122,21 @@ void solve() {
                 segL.set(j,max_x-x);
             }
             py = y;
+        };
+
+        if (!rev) {
+            for (auto &[y,v] : mp) {
+                g(y,v);
+            }
+        }
+        else {
+            for (auto it = mp.rbegin(); it != mp.rend(); it++) {
+                auto &[y,v] = *it;
+                g(y,v);
+            }
         }
     };
+
     f(true);
     f(false);
     for (auto x : ans) po(x);
