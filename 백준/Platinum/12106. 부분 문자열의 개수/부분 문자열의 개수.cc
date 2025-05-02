@@ -2032,10 +2032,6 @@ void solve() {
     int n; ri(n); 
     string s; ri(s);
     int m = s.size();
-    // vvi b(26);
-    // for (int i=0; i<m; i++) {
-    //     b[s[i]].push_back(i);
-    // }
     vvi w(m+1, vi(26));
     {
         string t = s;
@@ -2047,42 +2043,32 @@ void solve() {
                 int mx = 0;
                 int sz = z.size();
                 for (int k=m+1; k<sz; k++) {
-                    assert(k < sz);
                     if (z[k] == sz - k) {
                         chmax(mx, z[k]);
                     }
                 }
                 t.pop_back();
-                // assert(i <= m);
-                // assert(j < 26);
                 w[i][j] = mx;
             }
             if (i == m) break;
-            assert(i < m);
             t += s[i];
         }
     }
-    // debug(w);
     
     Vec<3,mint> dp(n+1,m+1,m+1);
     dp[0][0][0] = 1;
     for (int i=0; i<n; i++) {
-        for (int j=0; j<=m; j++) { // current streak
-            for (int k=0; k<=m; k++) { // max_streak
+        for (int j=0; j<=m; j++) { // max_streak 
+            for (int k=0; k<=m; k++) { // current_streak
                 if (dp[i][j][k].val() == 0) continue;
                 for (int c=0; c<26; c++) {
-                    int nj = w[j][c];
-                    chmin(nj,m);
-                    int nk = max(k,nj);
-                    chmin(nk,m);
+                    int nk = w[k][c];
+                    int nj = max(j,nk);
                     dp[i+1][nj][nk] += dp[i][j][k];
                 }
             }
         }
     }
-    mint ans = 0;
-    for (int j=0; j<=m; j++) {
-        ans += dp[n][j][m];
-    }
+    auto ans = sum(dp[n][m]);
     po(ans);
 }
