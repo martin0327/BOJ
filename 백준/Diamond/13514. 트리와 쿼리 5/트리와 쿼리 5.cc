@@ -2030,19 +2030,17 @@ signed main() {
 
 const int inf = 2e18;
 const int mx_sz = 1e5+5;
-vi adj[mx_sz];
 int a[mx_sz];
 int par[mx_sz];
 int sub[mx_sz];
 int check[mx_sz];
-set<pii> s[mx_sz];
+int dep[mx_sz];
+min_pq<pii> s[mx_sz];
 
 
 
 void solve() {
     int n; ri(n);
-    vi par(n+1,-1);
-    vector<set<pii>> s(n);
     for (int i=0; i<n; i++) {
         par[i] = -1;
         a[i] = 1;
@@ -2059,7 +2057,6 @@ void solve() {
     }
 
     auto lca = LCA(adj);
-    vi dep(n);
     {
         function<void(int,int,int)> f = [&] (int u, int p, int d) {
             dep[u] = d;
@@ -2117,7 +2114,7 @@ void solve() {
             a[v] ^= 1;
             if (a[v] == 0) {
                 while (true) {
-                    s[u].insert({dist(u,v),v});
+                    s[u].emplace(dist(u,v),v);
                     if (par[u] == -1) break;
                     else u = par[u];
                 }
@@ -2128,14 +2125,11 @@ void solve() {
             int u = src;
             int ans = inf;
             int delta = 0;
-            // debug(u);
-            // debug(s);
             while (true) {
                 while (s[u].size()) {
-                    auto [d,v] = *s[u].begin();
-                    if (a[v] == 1) s[u].erase(s[u].begin());
+                    auto [d,v] = s[u].top();
+                    if (a[v] == 1) s[u].pop();
                     else {
-                        // debug(u,src,d,dist(u,src),d+dist(u,src));
                         chmin(ans, d + dist(u,src));
                         break;
                     }
@@ -2144,18 +2138,12 @@ void solve() {
                 else {
                     u = par[u];
                 }
-                // debug(delta);
             }
-
 
             if (ans == inf) ans = -1;
             po(ans);
         }
     }
-
-
-    
-
 
 
 }
