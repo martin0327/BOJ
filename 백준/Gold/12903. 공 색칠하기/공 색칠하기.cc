@@ -2034,20 +2034,20 @@ void solve() {
     vi c(k); ri(c);
     c.insert(c.begin(), 0);
     int n = sum(c);
-    vm dp(n+1);
+    vm dp(n+1), ndp(n+1), pre(n+1);
     dp[0] = 1;
     for (int i=1, s=0; i<=k; i++) {
-        vm ndp(n+1);
-        for (int j=0; j<=n; j++) {
-            if (dp[j].val() == 0) continue;
-            for (int nj=j+1; nj<=n; nj++) {
-                ndp[nj] += dp[j] * ncr(nj-s-1, c[i]-1);
-            }
+        ndp.assign(n+1,0);
+        pre[0] = dp[0];
+        for (int j=1; j<=n; j++) {
+            pre[j] = pre[j-1] + dp[j];
+        }
+        for (int nj=1; nj<=n; nj++) {
+            ndp[nj] = pre[nj-1] * ncr(nj-s-1,c[i]-1);
         }
         s += c[i];
         swap(dp, ndp);
     }
     auto ans = dp.back();
     po(ans);
-
 }
