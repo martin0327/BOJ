@@ -2033,14 +2033,15 @@ void solve() {
     for (int i=1; i<m; i++) {
         for (int l=1; l<=m; l++) {
             for (int r=1; r<=m; r++) {
-                if (dp[i][l][r] == 0) continue;
+                auto &x = dp[i][l][r];
+                if (x == 0) continue;
                 if (l+1 <= m) {
-                    dp[i+1][l+1][r] += dp[i][l][r];
+                    dp[i+1][l+1][r] += x;
                 }
                 if (r+1 <= m) {
-                    dp[i+1][l][r+1] += dp[i][l][r];
+                    dp[i+1][l][r+1] += x;
                 }
-                dp[i+1][l][r] += dp[i][l][r] * (i-1);
+                dp[i+1][l][r] += (i-1) * x;
             }
         }
     }
