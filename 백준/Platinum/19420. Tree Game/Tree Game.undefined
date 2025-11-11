@@ -2048,39 +2048,39 @@ void solve() {
         return;
     }
 
+    auto is_leaf = [&] (int v) {
+        int sz = adj[v].size();
+        return sz == 1;
+    };
+
     int ans = 0;
 
     function<int(int,int)> f = [&] (int u, int p) {
-        int ret = 0;
-        int x = 0, y = 0, cnt = 0;
+        int ret = 1;
+        if (is_leaf(u)) return ret;
+
+        int x = 0, y = 0;
         for (auto v : adj[u]) {
             if (v == p) continue;
-            cnt++;
             int t = f(v,u);
             if (t == 1) x++;
             if (t == 2) y++;
         }
 
-        if (cnt == 0) return ret = 1;
-        while (y >= 2) {
-            y -= 2;
-            ans++;
-        }
-        while (x >= 3) {
-            x -= 2;
-            ans++;
+        if (y >= 2) {
+            ans += y / 2;
+            y %= 2;
         }
 
-        if (x == 0) {
-            if (y == 1) ret = 2;
-            else ret = 0;
+        if (x >= 3) {
+            int q = (x-1)/2;
+            ans += q;
+            x -= 2*q;
         }
-        else if (x == 1) {
-            if (y == 1) ret = 2;
-            else ret = 1;
-        }
+
+        if (y == 0) ret = x;
         else {
-            if (y == 0) ret = 2;
+            if (x <= 1) ret = 2;
             else {
                 ans++;
                 ret = 1;
@@ -2090,13 +2090,8 @@ void solve() {
     };
 
     
-    int root = -1;
-    for (int i=0; i<n; i++) {
-        if (adj[i].size() > 1) {
-            root = i;
-            break;
-        }
-    }
+    int root = 0;
+    while (is_leaf(root)) root++;
 
     int res = f(root, -1);
     if (res == 2) ans++;
