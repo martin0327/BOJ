@@ -2067,22 +2067,13 @@ void solve() {
 
     function<void(int,int)> f = [&] (int i, int j) {
         if (i == n) {
-            bool ok = true;
-            for (int i=0; i<n; i++) {
-                for (int j=0; j<m; j++) {
-                    ok &= (a[i][j] == 0);
-                }
+            int cnt = 0;
+            for (auto &v : b) {
+                cnt += sum(v);
             }
-            assert(ok);
-            if (ok) {
-                int cnt = 0;
-                for (auto &v : b) {
-                    cnt += sum(v);
-                }
-                if (cnt < min_cnt) {
-                    min_cnt = cnt;
-                    ans = b;
-                }
+            if (cnt < min_cnt) {
+                min_cnt = cnt;
+                ans = b;
             }
             return;
         }
@@ -2092,14 +2083,10 @@ void solve() {
             return;
         }
 
-        if (valid(i,j)) {
-            f(i,j+1);
-        }
+        if (valid(i,j)) f(i,j+1);
 
         flip(i,j);
-        if (valid(i,j)) {
-            f(i,j+1);
-        }
+        if (valid(i,j)) f(i,j+1);
         flip(i,j);
     };
 
