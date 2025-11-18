@@ -1,3 +1,7 @@
+#ifdef LOCAL
+#include "pch.hpp"
+#else // 2000 lines template starts here
+
 #include<bits/stdc++.h>
 #include <type_traits>
 
@@ -1322,28 +1326,52 @@ struct two_sat {
 
 using namespace atcoder;
 
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+// #pragma GCC optimize("O3,unroll-loops")
+// #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #include <bits/stdc++.h>
 // #define endl "\n"
-#define int long long
+using ll = long long;
+#define int ll
 #define PI 3.14159265359
 
 using namespace std;
 using mint = modint;
 
 using ld = long double;
-using vi = vector<int>;
+using vi = vector<ll>;
 using vvi = vector<vi>;
 using vm = vector<mint>;
 using vvm = vector<vm>;
-using pii = pair<int,int>;
+using pii = pair<ll,ll>;
 using vp = vector<pii>;
 using vvp = vector<vp>;
 using vs = vector<string>;
 using vvs = vector<vs>;
-using ti3 = tuple<int,int,int>;
+using ti3 = tuple<ll,ll,ll>;
 using vti3 = vector<ti3>;
+using i128 = __int128;
+
+std::string to_string_i128(i128 x) {
+    if (x == 0) return "0";
+    bool neg = false;
+    if (x < 0) {
+        neg = true;
+        x = -x;
+    }
+    std::string s;
+    while (x > 0) {
+        int digit = x % 10;
+        s.push_back('0' + digit);
+        x /= 10;
+    }
+    if (neg) s.push_back('-');
+    std::reverse(s.begin(), s.end());
+    return s;
+}
+
+std::ostream& operator<<(std::ostream& os, i128 x) {
+    return os << to_string_i128(x);
+}
 
 struct custom_hash {
     static uint64_t splitmix64(uint64_t x) {
@@ -1367,6 +1395,39 @@ struct custom_hash {
         }
         return seed;
     }
+};
+
+struct range {
+    struct iterator {
+        int value;
+        int step;
+        int stop;
+
+        int operator*() const { return value; }
+
+        iterator& operator++() {
+            value += step;
+            return *this;
+        }
+
+        bool operator!=(const iterator& other) const {
+            (void)other; // end iterator unused
+            return step > 0 ? value < stop : value > stop;
+        }
+    };
+
+    int start, stop, step;
+
+    range(int stop) : start(0), stop(stop), step(1) {}
+
+    range(int start, int stop) : start(start), stop(stop), step(1) {}
+
+    range(int start, int stop, int step) : start(start), stop(stop), step(step) {
+        assert(step != 0 && "range() step must not be zero");
+    }
+
+    iterator begin() const { return {start, step, stop}; }
+    iterator end()   const { return {stop,  step, stop}; }
 };
 
 template<int D, typename T>
@@ -1458,6 +1519,7 @@ void __print(char x) {cerr << '\'' << x << '\'';}
 void __print(const char *x) {cerr << '\"' << x << '\"';}
 void __print(const string &x) {cerr << '\"' << x << '\"';}
 void __print(bool x) {cerr << (x ? "true" : "false");}
+void __print(i128 x) {cerr << x;}
 void __print(mint x) {cerr << x.val();}
 
 template<typename T, typename V>
@@ -1607,7 +1669,7 @@ set<T> get_set(vector<T> &a) {
 
 template<typename T>
 vector<T> get_unique(vector<T> a) {
-    asort(a);
+    sort(a.begin(), a.end());
     a.erase(unique(a.begin(), a.end()), a.end());
     return a;
 }
@@ -1836,30 +1898,82 @@ vi get_pfactors(int x) {
 ////////////////////////////////////
 
 struct rabin_karp {
-    int n,p,m;
-    vi p_pow,p_inv,h;
+    size_t n;
+    i128 B, P;                          // base and modulus for this instance
+    inline static const i128 defaultP = (1ll << 61) - 1;
 
-    rabin_karp(string s, int p, int m) {
-        this->n = s.size();
-        this->p = p;
-        this->m = m;
-        p_pow = p_inv = vi(n+1,1);
-        for (int i=1; i<=n; i++) p_pow[i] = (p_pow[i-1]*p)%m;
-        p_inv[n] = pow_mod(p_pow[n],m-2,m);
-        for (int i=n-1; i>0; i--) p_inv[i] = (p_inv[i+1]*p)%m;
-        h = vi(n+1);
-        for (int i=0; i<n; i++) {
-            int x = ('a'<=s[i] && s[i]<='z') ? (s[i]-'a'+1) : (s[i]-'A'+27);
-            h[i+1] = (h[i]+(x*p_pow[i]))%m;
+    static std::mt19937_64 rng;         // shared RNG for all instances
+
+    std::vector<i128> pw;               // pw[i] = B^i mod P
+    std::vector<i128> h;                // prefix hashes
+
+    // --- helper: get a random base in [1000, sqrt(P)] ---
+    static i128 random_base(i128 P) {
+        std::uniform_int_distribution<long long> dist(
+            1000,
+            (long long)std::sqrt((long double)P)
+        );
+        return dist(rng);
+    }
+
+    // --- helper for string → vector<int> ---
+    static std::vector<int> to_vec(const std::string &s) {
+        std::vector<int> a(s.size());
+        for (int i = 0; i < (int)s.size(); i++) {
+            a[i] = (unsigned char)s[i];
+        }
+        return a;
+    }
+
+    // --- core constructor: explicit base + modulus ---
+    rabin_karp(const std::vector<int> &a, i128 B, i128 P = defaultP)
+        : n(a.size()), B(B), P(P), pw(n + 1, 1), h(n + 1, 0) {
+
+        // pw[i] = B^i mod P
+        for (int i = 1; i <= (int)n; i++) {
+            pw[i] = (pw[i - 1] * B) % P;
+        }
+
+        // backward-style prefix hash:
+        // h[i+1] = h[i]*B + a[i]   (mod P)
+        for (int i = 0; i < (int)n; i++) {
+            h[i+1] = ((h[i] * B )%P + a[i]) % P;
         }
     }
 
-    int query(int l, int r) {
-        assert(0<=l && l<=r && r<n);
-        int x = ((h[r+1]-h[l])%m+m)%m;
-        return (x*p_inv[l]) % m;
+    // --- convenience constructor: random base, given modulus (or defaultP) ---
+    rabin_karp(const std::vector<int> &a, i128 P = defaultP)
+        : rabin_karp(a, random_base(P), P) {}
+
+    // --- string constructor: explicit base B, explicit P ---
+    rabin_karp(const std::string &s, i128 B, i128 P)
+        : rabin_karp(to_vec(s), B, P) {}
+
+    // --- convenience constructor: random base, given modulus (or defaultP) ---
+    rabin_karp(const std::string &s, i128 P = defaultP)
+        : rabin_karp(to_vec(s), random_base(P), P) {}
+
+    // hash of substring [l, r] (0-indexed, inclusive)
+    i128 query(int l, int r) const {
+        assert(0 <= l && l <= r && (size_t)r < n);
+        int len = r - l + 1;
+
+        // x = h[r+1] - h[l] * B^len
+        i128 x = h[r + 1] - ( (__int128)h[l] * pw[len] ) % P;
+        x %= P;
+        if (x < 0) x += P;
+        return x;
     }
+
+    // optional helpers if you want to inspect parameters
+    i128 base() const { return B; }
+    i128 mod()  const { return P; }
 };
+
+// static RNG definition
+std::mt19937_64 rabin_karp::rng(
+    std::chrono::steady_clock::now().time_since_epoch().count()
+);
 
 ////////////////////////////////////
 
@@ -2001,9 +2115,11 @@ struct LCA {
 
 ////////////////////////////////////
 
+#endif // 2000 lines template ends here
+
 void io_util() {
     #ifdef LOCAL
-    freopen("input.txt", "r", stdin);
+    // freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
     #endif
     cin.tie(0)->sync_with_stdio(0);
@@ -2028,6 +2144,7 @@ signed main() {
     return 0;
 }
 
+
 const int inf = 2e18;
 void solve() {
     int n; ri(n);
@@ -2047,30 +2164,27 @@ void solve() {
         }
     }
 
-    int ans = -inf, root = -1;
+    int ans = -inf;
 
     function<int(int,int)> f = [&] (int u, int p) {
-        int ret = a[u];
-        int s = 0;
-        int cnt = 0;
+        int ret = 0;
+        int s = 0, mx = 0;
+
         for (auto v : adj[u]) {
             if (v == p) continue;
             int x = f(v,u);
             s += x;
-            if (x > 0) cnt++;
+            chmax(mx, x);
         }
-        if (u != root) chmax(ret, s - a[u]);
-        else if (cnt <= 1) chmax(ret, s + a[u]);
 
+        if (a[u]) chmax(ans, max(mx+1,s-1));
+        else chmax(ans, s);
+
+        ret = max(a[u], s-a[u]);
         return ret;
     };
 
-    for (int i=0; i<n; i++) {
-        if (a[i]) {
-            root = i;
-            chmax(ans, f(i,-1));
-        }
-    }
+    f(0,-1);
 
     po(ans);
 }
