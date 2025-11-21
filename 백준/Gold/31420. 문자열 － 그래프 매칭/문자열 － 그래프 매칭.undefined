@@ -2155,7 +2155,7 @@ void solve() {
         return 26*x + y;
     };
     int sz = 26 * 26;
-    vi a(sz);
+    vi a(sz), b(sz);
 
     int m; ri(m);
     for (int i : range(m)) {
@@ -2164,25 +2164,23 @@ void solve() {
         int y = t[1] - 'a';
         a[26*x+y] = 1;
     }
+
     vi pre(n);
     for (int i=1; i<n; i++) {
         auto x = g(i-1);
-        pre[i] = (a[x] == 0);
+        pre[i] = pre[i-1] + (a[x] == 0);
     }
-    for (int i=1; i<n; i++) {
-        pre[i] += pre[i-1];
-    }
-    map<int,int> mp;
+
+    vi inv_pre(n, -1);
     for (int i=0; i<n; i++) {
-        if (!mp.count(pre[i])) {
-            mp[pre[i]] = i;
+        if (inv_pre[pre[i]] == -1) {
+            inv_pre[pre[i]] = i;
         }
     }
 
     int tot = sum(a), cnt1 = 0 , cnt2 = 0;
 
     int ans = 0;
-    vi b(sz);
     for (int j=1,i=0; j<n; j++) {
         auto x = g(j-1);
         b[x]++;
@@ -2212,7 +2210,8 @@ void solve() {
             i++;
         }
         if (tot == cnt1 && cnt2 == 0) {
-            ans += i - mp[pre[i]] + 1;
+            int idx = inv_pre[pre[i]];
+            ans += i - idx + 1;
         }
     }
     po(ans);
