@@ -2144,37 +2144,18 @@ signed main() {
     return 0;
 }
 
-const int sz = 120, off = 55;
 void solve() {
     int n,k; ri(n,k);
     k++;
-    Vec<4,int> dp(n+1,sz,2,2);
-    dp[n][off][0][0] = 1;
-    for (int i=n; i>0; i--) { // index
-        for (int j=0; j<sz; j++) { // prefix sum
-            for (int l=0; l<2; l++) { // last number
-                for (int fl=0; fl<2; fl++) {  // negative flag
-                    if (dp[i][j][l][fl] == 0) continue;
-                    for (int d=0; d<2; d++) { // new digit
-                        int x = d?1:-1;
-                        int nj = j + x;
-                        int nl = d;
-                        int nfl = fl | (nj < off);
-                        dp[i-1][nj][nl][nfl] += dp[i][j][l][fl];
-                    }
-                }
-            }
-        }
-    }
-    string ans;
 
-    auto g = [&] (string t) {
+    auto g = [&] (string t) { // number of valid strings such that prefix is fixed as t
         int m = t.size(), p = 0;
         for (auto c : t) {
             if (c == ')') p--;
             else p++;
             if (p < 0) return 0ll;
         }
+        int sz = n + 1;
         vi dp(sz), ndp;
         dp[p] = 1;
         for (auto _ : range(n-m)) {
@@ -2190,27 +2171,20 @@ void solve() {
         return dp[0];
     };
 
+    string ans;
     for (int i=0; i<n; i++) {
-        int cnt = 0; // number of strings that are not valid when selecting 0
-        for (int j=0; j<sz; j++) {
-            int l = 0;
-            for (int fl=0; fl<2; fl++) {
-                cnt += dp[i][j][l][fl];
-            }
-        }
         string t = ans + '(';
-        cnt -= g(t);
+        int cnt = (1ll<<(n-i-1)) - g(t); // number of strings that are not valid when selecting (
         if (k <= cnt) {
-            // should select 0
+            // should select ( 
             ans += '(';
         }
         else {
-            // should select 1
+            // should select )
             ans += ')';
             k -= cnt;
         }
     }
     if (k == 1) po(ans);
     else po(-1);
-
 }
