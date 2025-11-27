@@ -2203,30 +2203,16 @@ void solve() {
         x %= b;
         while (x <= 0) x += b;
 
-        int lo = 0, hi = 1e9, k = -1;
-        while (lo <= hi) {
-            int mid = (lo+hi)/2;
-            int tx = x + mid*b;
-            if (mul_overflow(a,tx)) {
-                hi = mid - 1;
-                continue;
-            }
-            int ty = (m - a*tx) / b; // may overflow?
-            if (tx <= ty) {
-                k = mid;
-                lo = mid + 1;
-            }
-            else hi = mid - 1;
-        }
-        if (k == -1) continue;
+        y = (m - a*x) / b;
+
+        if (y - x < 0) continue;
+        int k = (y-x) / (a+b);
+
         x += k * b;
         y = (m - a*x) / b;
 
         pii tg = {y,x};
         chmin(ans, tg);
-
-        // y = (m - a*x) / b;
-        // smallest non-negative valid x
 
     }
     auto [y,x] = ans;
