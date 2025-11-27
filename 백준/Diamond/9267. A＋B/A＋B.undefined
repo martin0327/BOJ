@@ -2139,6 +2139,8 @@ signed main() {
 void yes() { po("YES"); }
 void no() { po("NO"); }
 
+
+
 i128 exgcd(i128 a, i128 b, i128 &x, i128 &y) {
     if (b == 0) {
         x = 1; 
@@ -2152,10 +2154,19 @@ i128 exgcd(i128 a, i128 b, i128 &x, i128 &y) {
     return g;
 }
 
+i128 gcd(i128 a, i128 b) {
+    i128 x, y;
+    return exgcd(a,b,x,y);
+}
 
 void solve() {
-    ll a,b,s;
-    ri(a,b,s);
+    i128 a,b,s;
+    {
+        ll aa,bb,ss;
+        ri(aa,bb,ss);
+        a = aa, b = bb, s = ss;
+    }
+
     if (a == s || b == s) {
         yes();
         return;
@@ -2178,9 +2189,7 @@ void solve() {
         return;
     }
 
-    i128 tx, ty;
-
-    auto g = exgcd(a,b,tx,ty);
+    auto g = gcd(a,b);
 
     if (s % g != 0) {
         no();
@@ -2200,35 +2209,21 @@ void solve() {
     auto cd = [&] (i128 a, i128 b) {
         return (a+b-1) / b;
     };
+
     x0 %= b;
     if (x0 < 0) x0 += b;
     y0 = (s - a*x0) / b;
-    i128 k_lo = cd(-x0, b);
-    i128 k_hi = y0 / a;
+    i128 k_lo = 0;
 
-    assert(k_lo == 0);
-
-    for (int k=k_lo, cnt = 0; k<=k_hi; k++) {
+    int lim = 1e4;
+    for (int k=0; k<lim; k++) {
         i128 x = x0 + k*b;
         i128 y = y0 - k*a;
-        if (x >= 0 && y >= 0 && exgcd(x,y,tx,ty) == 1) {
+        if (x >= 0 && y >= 0 && gcd(x,y) == 1) {
             yes();
             return;
         }
-        cnt++;
-        if (cnt > 1e4) break;
     }
 
-    for (int k=k_hi, cnt = 0; k>=k_lo; k--) {
-        i128 x = x0 + k*b;
-        i128 y = y0 - k*a;
-        if (x >= 0 && y >= 0 && exgcd(x,s,tx,ty) == 1) {
-            yes();
-            return;
-        }
-        cnt++;
-        if (cnt > 1e4) break;
-    }
     no();
-
 }
