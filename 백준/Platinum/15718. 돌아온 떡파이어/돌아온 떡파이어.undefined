@@ -1,0 +1,176 @@
+#include<bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using vi = vector<ll>;
+
+void io_util() {
+    cin.tie(0)->sync_with_stdio(0);
+    cout.precision(17);
+}
+
+void po(ll x) { cout << x << "\n"; }
+
+const ll m1 = 97, m2 = 1031;
+
+ll safe_mod(ll x, ll m) {
+    x %= m;
+    if (x < 0) x += m;
+    return x;
+}
+
+ll add(ll x, ll y, ll m) { return safe_mod(x+y,m); }
+ll mul(ll x, ll y, ll m) { return safe_mod(x*y,m); }
+ll pow(ll x, ll e, ll m) {
+    ll ret = 1;
+    while (e) {
+        if (e&1) ret = mul(ret,x,m);
+        x = mul(x,x,m);
+        e >>= 1;
+    }
+    return ret;
+}
+ll inv(ll x, ll m) { return pow(x,m-2,m); }
+
+vi fact1(m1,1), fact2(m2,1);
+vi finv1(m1,1), finv2(m2,1);
+
+ll ncr(ll n, ll r, ll m, vi &fact, vi &finv) {
+    vi a, b;
+    while (n) {
+        a.push_back(n % m);
+        n /= m;
+    }
+    while (r) {
+        b.push_back(r % m);
+        r /= m;
+    }
+    int sz = max(a.size(), b.size());
+    while (a.size() < sz) a.push_back(0);
+    while (b.size() < sz) b.push_back(0);
+    ll ret = 1;
+
+    auto f = [&] (int n, int r) {
+        if (n < r) return 0ll;
+        ll ret = fact[n];
+        ll den = mul(finv[r],finv[n-r],m);
+        return mul(ret,den,m);
+    };
+
+    for (int i=0; i<sz; i++) {
+        ret = mul(ret, f(a[i],b[i]), m);
+    }
+    return ret;
+}
+
+void init_fact(vi &fact, vi &finv, ll mod) {
+    for (int i=1; i<mod; i++) {
+        fact[i] = mul(fact[i-1],i,mod);
+    }
+    finv[mod-1] = inv(fact[mod-1], mod);
+    for (int i=mod-1; i>=1; i--) {
+        finv[i-1] = mul(finv[i],i,mod);
+    }
+}
+
+tuple<ll,ll,ll> extended_gcd(ll a, ll b) {
+    ll r0 = b, r1 = a;
+    ll x0 = 0, x1 = 1;   // coefficients of a
+    ll y0 = 1, y1 = 0;   // coefficients of b
+
+    while (r1 != 0) {
+        ll q = r0 / r1;
+
+        ll r2 = r0 - q * r1;
+        ll x2 = x0 - q * x1;
+        ll y2 = y0 - q * y1;
+
+        r0 = r1;  r1 = r2;
+        x0 = x1;  x1 = x2;
+        y0 = y1;  y1 = y2;
+    }
+
+    // r0 = gcd(a, b)
+    // r0 = a*x0 + b*y0
+    return make_tuple(r0, x0, y0);
+}
+
+pair<ll,ll> crt_merge(ll r1, ll m1, ll r2, ll m2) {
+    // Normalize residues
+    r1 = safe_mod(r1, m1);
+    r2 = safe_mod(r2, m2);
+
+    // Extended GCD on moduli
+    auto [g, x, y] = extended_gcd(m1, m2); // m1*x + m2*y = g
+
+    ll diff = r2 - r1;
+    if (diff % g != 0) return {0, 0};  // No solution
+
+    // Reduced modulus for k
+    ll m2_g = m2 / g;  // B
+
+    // M = diff / g
+    // A = m1 / g, inv(A) ≡ x (mod m2_g)
+    // k ≡ M * x (mod m2_g)
+    ll k = safe_mod((diff / g % m2_g) * x, m2_g);
+
+    // Compute merged solution
+    ll r = r1 + m1 * k;
+    ll m = m1 * m2_g;  // lcm(m1, m2)
+
+    r = safe_mod(r, m);
+    return {r, m};
+}
+
+pair<ll,ll> crt(const vector<ll>& r, const vector<ll>& m) {
+    ll r0 = 0, m0 = 1;   // identity: x ≡ 0 (mod 1)
+
+    for (int i = 0; i < (int)r.size(); i++) {
+        auto [nr, nm] = crt_merge(r0, m0, r[i], m[i]);
+        if (nm == 0) return {0, 0};   // no solution
+        r0 = nr;
+        m0 = nm;
+    }
+
+    return {r0, m0};
+}
+
+void solve(); 
+signed main() {
+    io_util();
+
+    init_fact(fact1,finv1,m1);
+    init_fact(fact2,finv2,m2);
+
+    int tc = 1;
+    cin >> tc;
+    while (tc--) solve();
+    return 0;
+}
+
+void solve() {
+    int n,m; cin >> n >> m;
+
+    if (m == 1) {
+        if (n == 0) po(1);
+        else po(0);
+        return;
+    }
+
+    if (n < m-1) {
+        po(0);
+        return;
+    }
+    
+    int x = n-1, y = m-2;
+    // want to compute nhr(m-1,n-(m-1)) modulo 1e5+7 = 97 * 1031
+    // which is equivalent to ncr(n-1,m-2) = ncr(x,y)
+    // ncr(x,y) <- use crt for ncr(a,b) with mod m1 and m2 
+    auto r1 = ncr(x,y,m1,fact1,finv1);
+    auto r2 = ncr(x,y,m2,fact2,finv2);
+
+    vi mm = {m1,m2};
+    vi rr = {r1,r2};
+
+    auto [r0,m0] = crt(rr,mm);
+    po(r0);
+}
