@@ -1,0 +1,44 @@
+# [Platinum V] Challenging Hike - 29988 
+
+[문제 링크](https://www.acmicpc.net/problem/29988) 
+
+### 성능 요약
+
+메모리: 18276 KB, 시간: 104 ms
+
+### 분류
+
+깊이 우선 탐색, 그래프 이론, 그래프 탐색, 가장 긴 증가하는 부분 수열 문제, 트리
+
+### 제출 일자
+
+2025년 11월 30일 10:17:54
+
+### 문제 설명
+
+<p>Finally, the exhausting exams are behind you, and the time has come to relish a well-deserved vacation away from the college hustle. With your bags neatly packed, you set out for an adventure to explore one of the most renowned mountains in your region – a destination you’ve been dreaming of visiting for a considerable period.</p>
+
+<p>This majestic mountain boasts impressive dimensions and offers a plethora of hiking options. Comprising a total of N landmarks, each uniquely identified by a number ranging from 1 to N, the mountain presents a captivating network of N − 1 interconnected paths. These pathways ensure that you can effortlessly traverse from any landmark to another, connecting the entire mountain in a seamless web.</p>
+
+<p>Each landmark, denoted by the index i, possesses an associated score, aptly named vi . This score reflects the expected number of likes your social media post of that landmark would attract. Brimming with enthusiasm, you’ve decided to infuse an extra layer of excitement into your hike by embracing the “photos hype challenge”. In this challenge, your objective is nothing short of extraordinary: capture and post photos in a manner that guarantees each successive photo garners more likes than its predecessor.</p>
+
+<p>The rules of this challenge dictate your journey to unfold as follows:</p>
+
+<ol>
+	<li>You commence your hike from landmark 1.</li>
+	<li>Progressing along the available paths, you navigate through the landmarks, always moving forward and never backtracking.</li>
+	<li>At each landmark you visit, you are presented with the choice of capturing a photo and posting it on your social media platform.</li>
+</ol>
+
+<p>As your journey unfolds, you’re curious about the potential outcomes. Specifically, for every landmark i, you seek to determine the maximum number of photos that can be posted if you initiate the hike from landmark 1 and conclude at landmark i (although you not necessarily took a photo of landmark i). The challenge is to strategically select the landmarks to capture photos, ensuring that each photo outshines its predecessor in terms of expected likes.</p>
+
+<p>Your task is to calculate this maximum number of photos for each landmark. Can you rise to the challenge and uncover the most captivating and likable path through this mountain?</p>
+
+### 입력 
+
+ <p>The first line contains an integer N (1 ≤ N ≤ 10<sup>5</sup>), representing the number of landmarks in the mountain. The second line contains N − 1 integers p<sub>2</sub>, p<sub>3</sub>, . . . , p<sub>N</sub> (1 ≤ p<sub>i</sub> ≤ N), where p<sub>i</sub> represents that there is a path between the landmarks i and p<sub>i</sub>. The third line contains N integers v<sub>1</sub>, v<sub>2</sub>, . . . , v<sub>N</sub> (1 ≤ v<sub>i</sub> ≤ 10<sup>9</sup>), where v<sub>i</sub> represents the expected number of likes a photo of the i-th landmark would get.</p>
+
+### 출력 
+
+ <p>Output a single line with N − 1 integers, where the i-th integer represents the maximum number of photos you can post if you start the hike on landmark 1 and finish on landmark (i + 1).</p>
+
