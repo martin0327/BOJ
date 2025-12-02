@@ -4,7 +4,7 @@
 
 ### 성능 요약
 
-메모리: 3264 KB, 시간: 1584 ms
+메모리: 3396 KB, 시간: 416 ms
 
 ### 분류
 
@@ -12,7 +12,7 @@
 
 ### 제출 일자
 
-2025년 12월 2일 12:13:56
+2025년 12월 2일 12:16:48
 
 ### 문제 설명
 
@@ -22,7 +22,7 @@
 
 <p>아래 그림은 N = 3, M = 6인 예이다.</p>
 
-<p style="text-align: center;"><img alt="" src="" style="height:85px; width:164px"></p>
+<p style="text-align: center;"><img alt="" src="https://www.acmicpc.net/JudgeOnline/upload/201005/dom.PNG" style="height:85px; width:164px"></p>
 
 <p>N과 M이 주어졌을 때, 격자판을 2x1크기의 도미노로 채우는 방법의 수를 구하는 방법을 작성하시오. 도미노는 회전시켜 1x2크기로 채울 수 있다. 도미노로 모두 채웠을 때, 빈 칸이 존재하면 안 된다.</p>
 

@@ -2175,7 +2175,8 @@ void solve() {
     vvm dp(n+1, vm(1ll<<m));
     int full = (1ll<<m) - 1;
     dp[0][0] = 1;
-    auto valid = [&] (int x) {
+
+    auto f = [&] (int x) {
         vi a;
         for (int i=0; i<m; i++) {
             if (x>>i&1) continue;
@@ -2184,13 +2185,18 @@ void solve() {
         }
         return a.empty();
     };
+
+    vi valid(1<<m);
+    for (int i=0; i<(1ll<<m); i++) {
+        valid[i] = f(i);
+    }
    
     for (int i=0; i<n; i++) {
         for (int j=0; j<(1<<m); j++) {
             if (dp[i][j].val() == 0) continue;
             for (int nj=0; nj<(1<<m); nj++) {
                 if (nj&j) continue;
-                if (valid(nj | j)) {
+                if (valid[nj | j]) {
                     dp[i+1][nj] += dp[i][j];
                 }
             }
