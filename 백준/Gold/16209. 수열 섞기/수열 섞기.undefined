@@ -2173,17 +2173,38 @@ signed main() {
 void solve() {
     int n; ri(n);
     vi a(n); ri(a);
-    dsort(a);
-    deque<int> dq;
-    for (auto i : range(n)) {
-        int x = a[i];
-        if (i&1) dq.push_back(x);
-        else dq.push_front(x);
+    vi pos, neg;
+    for (auto x : a) {
+        if (x >= 0) pos.push_back(x);
+        else neg.push_back(x);
     }
-    vi ans;
-    while (dq.size()) {
-        ans.push_back(dq.front());
-        dq.pop_front();
+    dsort(pos);
+    asort(neg);
+
+    auto f = [&] (vi a) {
+        int n = a.size();
+        deque<int> dq;
+        for (auto i : range(n)) {
+            int x = a[i];
+            if (i&1) dq.push_back(x);
+            else dq.push_front(x);
+        }
+        vi ret;
+        while (dq.size()) {
+            ret.push_back(dq.front());
+            dq.pop_front();
+        }
+        return ret;
+    };
+    auto b = f(pos);
+    auto c = f(neg);
+    if (!b.empty() && b.front() < b.back()) {
+        reverse(b);
     }
-    po(ans);
+    if (!c.empty() && abs(c.front()) > abs(c.back())) {
+        reverse(c);
+    }
+    for (auto x : c) b.push_back(x);
+    po(b);
+
 }
