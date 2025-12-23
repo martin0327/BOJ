@@ -2221,6 +2221,10 @@ struct EulerTour
         };
         ett(root);
     }
+    
+    int par(int v) {
+        return sp[0][v];
+    }
  
     int lca(int u, int v)
     {
@@ -2267,39 +2271,41 @@ void solve() {
         adj[v].push_back(u);
     }
     auto et = EulerTour(adj);
-    vp a(n, {0,1});
-    lazy_segtree<S, op, e, F, mapping, composition, id> seg(a);
-    auto g = [&] (int x) { return et.ETT[x].first; };
-    pii tg = {1,1};
+    vi a(n);
     while (m--) {
         int u,v; ri(u,v);
         u--; v--;
         if (u == v) {
-            int i = g(u);
-            seg.apply(i,i+1,tg);
+            a[v]++;
+            int p = et.par(v);
+            if (p != -1) a[p]--;
             continue;
         }
         auto lca = et.lca(u,v);
         if (u == lca || v == lca) {
-            auto w = (u==lca) ? v : u;
-            for (auto [l,r] : et.path(lca,w)) {
-                seg.apply(l,r,tg);
-            }
+            v = (u==lca) ? v : u;
+            a[v]++;
+            int p = et.par(lca);
+            if (p != -1) a[p]--;
         }
         else {
-            for (auto [l,r] : et.path(lca,u)) {
-                seg.apply(l,r,tg);
-            }
-            for (auto [l,r] : et.path(lca,v)) {
-                seg.apply(l,r,tg);
-            }
-            auto gl = g(lca);
-            seg.apply(gl,gl+1,{1,-1});
+            a[u]++;
+            a[v]++;
+            int p = et.par(lca);
+            if (p != -1) a[p]--;
+            a[lca]--;
         }
     }
     int ans = 0;
-    for (int i=0; i<n; i++) {
-        chmax(ans,seg.get(i).first);
-    }
+    function<void(int,int)> f = [&] (int u, int p) {
+        for (auto v : adj[u]) {
+            if (v == p) continue;
+            f(v,u);
+            a[u] += a[v];
+        }
+        chmax(ans, a[u]);
+    };
+    f(0,-1);
+    
     po(ans);
 }
