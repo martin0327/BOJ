@@ -2181,8 +2181,6 @@ void solve() {
         r--; c--;
     }
     int lo = 0, hi = 2*n, ans = -1;
-    vvi _vis(n, vi(n,inf));
-    for (auto [r,c] : a) _vis[r][c] = 0;
 
     auto check = [&] (int r, int c) {
         if (r < 0 || r >= n) return false;
@@ -2194,36 +2192,39 @@ void solve() {
         return r*n+c;
     };
 
-    vvi vis;
+    vvi vis(n, vi(n, inf));
     queue<pii> q;
-    while (lo <= hi) {
-        int mid = (lo+hi)/2;
-        vis = _vis;
-        for (auto [r,c] : a) q.push({r,c});
-        while (q.size()) {
-            auto [r,c] = q.front();
-            q.pop();
-            if (vis[r][c] == mid) continue;
-            for (int i=0; i<4; i++) {
-                int nr = r + dr[i];
-                int nc = c + dc[i];
-                if (!check(nr,nc)) continue;
-                if (vis[nr][nc] == inf) {
-                    vis[nr][nc] = vis[r][c] + 1;
-                    q.push({nr,nc});
-                }
+    for (auto [r,c] : a) {
+        vis[r][c] = 0;
+        q.push({r,c});
+    }
+    while (q.size()) {
+        auto [r,c] = q.front();
+        q.pop();
+        for (int i=0; i<4; i++) {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+            if (!check(nr,nc)) continue;
+            if (vis[nr][nc] == inf) {
+                vis[nr][nc] = vis[r][c] + 1;
+                q.push({nr,nc});
             }
         }
+    }
+
+    while (lo <= hi) {
+        int mid = (lo+hi)/2;
+        
         dsu uf(n*n);
         for (int r=0; r<n; r++) {
             for (int c=0; c<n; c++) {
-                if (vis[r][c] < inf) {
+                if (vis[r][c] <= mid) {
                     int u = g(r,c);
                     for (int i=0; i<2; i++) {
                         int nr = r + dr[i];
                         int nc = c + dc[i];
                         if (!check(nr,nc)) continue;
-                        if (vis[nr][nc] < inf) {
+                        if (vis[nr][nc] <= mid) {
                             int v = g(nr,nc);
                             uf.merge(u,v);
                         }
