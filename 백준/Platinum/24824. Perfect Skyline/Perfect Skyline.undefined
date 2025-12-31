@@ -2174,23 +2174,36 @@ void solve() {
     int n,m; ri(n,m);
     vi a(n); ri(a);
     vi b(m); ri(b);
+    map<int,vi> mp;
+
+    for (int i=0; i<m; i++) {
+        mp[b[i]].push_back(i);
+    }
+
     int sz = (1<<n);
     int whole = sz - 1;
+    vvi avail(m);
+    for (int mask=0; mask<sz; mask++) {
+        int cum = 0;
+        for (int j=0; j<n; j++) {
+            if (mask>>j&1) cum += a[j];
+        }
+        if (mp.count(cum)) {
+            for (auto i : mp[cum]) {
+                avail[i].push_back(mask);
+            }
+        }
+    }
+    debug(avail);
     vvi dp(m+1, vi(sz));
     dp[0][0] = 1;
     for (int i=0; i<m; i++) {
         for (int mask=0; mask<sz; mask++) {
             if (dp[i][mask] == 0) continue;
-            int rem = whole ^ mask;
-            for (int sub=rem; sub>0; sub = (sub-1)&rem) {
-                int cum = 0;
-                for (int j=0; j<n; j++) {
-                    if (sub>>j&1) cum += a[j];
-                }
-                if (cum == b[i]) {
-                    int nmask = mask + sub;
-                    dp[i+1][nmask] = 1;
-                }
+            for (auto sub : avail[i]) {
+                if (sub&mask) continue;
+                int nmask = mask | sub;
+                dp[i+1][nmask] = 1;
             }
         }
     }
@@ -2207,20 +2220,16 @@ void solve() {
         return;
     }
 
-    for (int i=m; i>=1; i--) {
-        for (int sub=cur; sub>0; sub = (sub-1) & cur) {
-            int cum = 0;
-            for (int j=0; j<n; j++) {
-                if (sub>>j&1) cum += a[j];
-            }
-            int nmask = cur - sub;
-            if (dp[i-1][nmask] && (cum == b[i-1])) {
-                cur = nmask;
+    for (int i=m-1; i>=0; i--) {
+        for (auto sub : avail[i]) {
+            if (((sub&cur) == sub) && (dp[i][cur^sub])) {
+                cur ^= sub;
                 ans.push_back(sub);
                 break;
             }
         }
     }
+
     reverse(ans);
     for (auto x : ans) {
         int sz = popcount(x);
