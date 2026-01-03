@@ -2156,6 +2156,7 @@ void io_util() {
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 const int lim = 1e7;
+int mp[2*lim+5];
 vi psq;
 void solve(); 
 signed main() {
@@ -2184,14 +2185,21 @@ void solve() {
         pre[i+1] = pre[i] + a[i];
     }
     int ans = 0;
-    map<int,int> mp;
     for (auto &x : pre) {
         for (auto y : psq) {
-            if (mp.count(x-y)) {
-                ans += mp[x-y];
+            int tg = x-y;
+            tg += lim;
+            if (0 <= tg && tg <= 2*lim+1) {
+                ans += mp[tg];
             }
+            // if (0 <= x-y && x-y <= lim) {
+            //     ans += mp[x-y];
+            // }
         }
-        mp[x]++;
+        mp[x+lim]++;
     }
     po(ans);
+    for (auto &x : pre) {
+        mp[x+lim] = 0;
+    }
 }
