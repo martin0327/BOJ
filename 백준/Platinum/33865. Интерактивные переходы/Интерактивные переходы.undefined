@@ -2173,23 +2173,66 @@ signed main() {
 void solve() {
     int n,m; ri(n,m);
     vti3 edg;
+    vvi adj(n);
     while (m--) {
         int u,v,c;
         ri(u,v,c);
         u--; v--;
         edg.push_back({u,v,c});
+        // adj[u].push_back({v,c});
+        // adj[v].push_back({u,c});
     }
     vi a(n); ri(a);
-    bool ok = true;
-    for (auto [u,v,c] : edg) {
+    // vti3 free;
+    vp free;
+    auto scc = scc_graph(n);
+    for (auto &uvc : edg) {
+        auto [u,v,c] = uvc;
         if (a[u] == a[v]) {
-            if (a[u] != c) ok = false;
+            if (a[u] != c) {
+                po("NO");
+                return;
+            }
+            else if (c) free.push_back({u,v});
+        }
+        else {
+            if (a[u]) swap(u,v);
+            if (c) {
+                adj[v].push_back(u);
+                scc.add_edge(v,u);
+            }
+            else {
+                adj[u].push_back(v);
+                scc.add_edge(u,v);
+            }
         }
     }
-    if (ok) {
-        po("YES");
-        po(-1);
+
+    auto res = scc.scc();
+    for (auto &v : res) {
+        if (v.size() > 1) {
+            po("NO");
+            return;
+        }
     }
-    else po("NO");
+
+    vp ans;
+    for (auto &cp : res) {
+        for (auto &v : cp) {
+            if (a[v]) ans.push_back({v,1});
+            else {
+                ans.push_back({v,1});
+                ans.push_back({v,0});
+            }
+        }
+    }
+
+    for (auto [u,v] : free) {
+        ans.push_back({u,1});
+        ans.push_back({v,1});
+    }
+    po("YES");
+    po(ans.size());
+    for (auto [x,y] : ans) po(x+1,y);
     
 }
