@@ -2179,36 +2179,21 @@ void solve() {
         adj[u].push_back({v,w});
         adj[v].push_back({u,w});
     }
-    vm a(n);
-    {
-        function<void(int,int)> g = [&] (int u, int p) {
-            for (auto [v,w] : adj[u]) {
-                if (v == p) continue;
-                a[v] = w;
-                g(v,u);
-            }
-        };
-        g(0,-1);
-    }
+
     mint ans = 0;
-    vm dp(n,1);
+    vm a(n), dp(n);
     function<void(int,int)> f = [&] (int u, int p) {
-        vm b;
+        mint cum = 0;
         for (auto [v,w] : adj[u]) {
             if (v == p) continue;
+            a[v] = w;
             f(v,u);
-            b.push_back(dp[v]);
+            ans += cum * dp[v];
+            cum += dp[v];
         }
-        mint tot = sum(b), d = 0;
-        ans += tot;
-        for (auto x : b) {
-            dp[u] += x;
-            d += x*(tot-x);
-        }
-        dp[u] *= a[u];
-        ans += d / 2;
+        ans += cum;
+        dp[u] = (cum+1) * a[u];
     };
     f(0,-1);
     po(ans);
-
 }
