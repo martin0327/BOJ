@@ -2213,22 +2213,27 @@ void solve() {
     vi p1(n+1, 0);
     for (int i = 1; i <= n; i++) p1[i] = p1[i-1] + a1[i];
 
-    vi psum(m+2, 0);
-    vi pmin(m+2, inf);         
+    vi psum(m+1, 0);
+    vi pmin(m+1, inf);         
     vi smax(m+2, -inf);        
 
     for (int i=1; i<=m; i++) {
         auto [x, v1, t] = a2[i];
         psum[i] = psum[i-1] + x;
         pmin[i] = pmin[i-1];
+        
         chmin(pmin[i], x-v1);
+        int loss = x - v1; 
+        if (loss < pmin[i]) pmin[i] = loss;
     }
 
 
     for (int i=m; i>=1; i--) {
         auto [x,v1,t] = a2[i];
         chmax(smax[i], smax[i+1]);
-        if (t) chmax(smax[i], v1);
+        if (t) {
+            chmax(smax[i], v1);
+        }
     }
 
     int ans = 0; 
@@ -2243,14 +2248,45 @@ void solve() {
                         
         if (rem >= 2*j + 1) {
             int best_odd = -inf;
-            chmax(best_odd, psum[j] + smax[j+1]);
-            chmax(best_odd, psum[j+1] - pmin[j+1]);
-            chmax(ans, p1[i] + best_odd);
+
+            if (j < m && smax[j+1] != -inf) {
+                best_odd = max(best_odd, psum[j] + smax[j+1]);
+            }
+
+            if (j + 1 <= m && pmin[j+1] != inf) {
+                int val = psum[j+1] - pmin[j+1];
+                best_odd = max(best_odd, val);
+            }
+
+            if (best_odd != -inf) {
+                chmax(ans, p1[i] + best_odd);
+            }
         }
-        chmax(ans, p1[i] + psum[j]);
+        
+        ans = max(ans, p1[i] + psum[j]);
+
     }
 
     ans += sum(a);
     po(ans);
 
 }
+
+/*
+
+    1   2   1
+    1   7   4
+0   2   3   1   4
+    4   2   8   
+    1   1   2
+
+    c1, c2, b1, b2 
+    c1[i], c2[i] = 1 or 2
+
+    if c1 == c2, it's trivial to categorize,
+    suppose c1 = 1 and c2 = 2
+    if b2 - b1 <= b1, then we can divide it into two cost1 item with value b1 and b2 - b1
+    otherwise, we use it as a cost 2 item with value b2
+    but at most once I can replace it with cost 1 item with value b1
+
+*/
