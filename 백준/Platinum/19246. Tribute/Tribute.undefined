@@ -2170,18 +2170,10 @@ signed main() {
     return 0;
 }
 
-// const int sz = 1e7+1;
-// const int maxm = 2e6;
-// signed b[sz];
-// signed a[maxm];
-// vector<pair<signed,signed>> t;
 vp t;
-
 const int inf = 2e18;
 map<int,int> mp;
 void solve() {
-    // memset(a,0,sizeof(a));
-    // memset(b,0,sizeof(b));
     int n; ri(n);
     int m = 1ll<<n;
     int cur = inf;
@@ -2229,10 +2221,6 @@ void solve() {
                 mp[j]++;
             }
         }
-        // if (nxt == sz || cnt != (1<<(n-1-i)) - 1) {
-        //     po("NO");
-        //     return;
-        // }
         swap(cur,nxt);
         ans.push_back(cur);
     }
