@@ -2216,6 +2216,7 @@ void solve() {
 
     vm dcnt1(n+1), dcnt2(n+1);
     vi ud1, ud2;
+    vi dvis1(n+1), dvis2(n+1);
 
     function<void(int,int,int)> gd = [&] (int u, int p, int d) {
         if (a[u]) {
@@ -2250,22 +2251,32 @@ void solve() {
             if (v == p) continue;
             if (check[v]) continue;
             gd(v,cen,1);
-            ud1 = get_unique(ud1);
-            ud2 = get_unique(ud2);
+            // ud1 = get_unique(ud1);
+            // ud2 = get_unique(ud2);
             mint x1 = 0, x2 = 0;
             mint y1 = 0, y2 = 0;
             mint c1 = 0, c2 = 0;
             for (auto d : ud1) {
+                if (dvis1[d]) continue;
+                dvis1[d] = 1;
                 x1 += d*dcnt1[d];
                 y1 += d*d*dcnt1[d];
                 c1 += dcnt1[d];
-                dcnt1[d] = 0;
             }
             for (auto d : ud2) {
+                if (dvis2[d]) continue;
+                dvis2[d] = 1;
                 x2 += d*dcnt2[d];
                 y2 += d*d*dcnt2[d];
                 c2 += dcnt2[d];
+            }
+            for (auto d : ud1) {
+                dcnt1[d] = 0;
+                dvis1[d] = 0;
+            }
+            for (auto d : ud2) {
                 dcnt2[d] = 0;
+                dvis2[d] = 0;
             }
             ud1.clear();
             ud2.clear();
