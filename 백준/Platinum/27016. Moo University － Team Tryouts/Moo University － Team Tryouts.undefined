@@ -2195,18 +2195,13 @@ void solve() {
         return it - cy.begin();
     };
 
-    vvp b(xsz);
-    for (auto [x,y] : a) {
-        int idx = gx(x);
-        for (int i=idx; i>=0; i--) {
-            b[i].push_back({x,y});
-        }
-    }
     int ans = 0;
+    vi pre;
     for (int i=0; i<xsz; i++) {
         int min_x = cx[i];
-        vi pre(ysz+1);
-        for (auto [x,y] : b[i]) {
+        pre.assign(ysz+1,0);
+        for (auto [x,y] : a) {
+            if (x < min_x) continue;
             int lo = 0, hi = gy(y), idx = -1;
             while (lo <= hi) {
                 int mid = (lo+hi)/2;
