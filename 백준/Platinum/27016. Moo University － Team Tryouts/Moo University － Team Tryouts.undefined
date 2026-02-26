@@ -2222,13 +2222,10 @@ void solve() {
                 pre[gy(y)+1]--;
             }
         }
-        // debug(min_x);
-        // debug(pre);
         for (int i=1; i<=ysz; i++) {
             pre[i] += pre[i-1];
         }
         chmax(ans, max(pre));
-        // debug(pre);
     }
     po(ans);
 
