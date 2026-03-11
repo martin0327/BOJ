@@ -2170,16 +2170,17 @@ signed main() {
     return 0;
 }
 
-using S = int;
+using i32 = signed;
+using S = i32;
 S op(S x, S y) { return x+y; }
 S e() { return 0; }
 
 void solve() {
-    int n; ri(n);
+    i32 n; ri(n);
     vi b(n); ri(b);
-    segtree<S,op,e> seg(vi(n,1));
+    segtree<S,op,e> seg(vector<S>(n,1));
     vi a(n);
-    for (int i=0; i<n; i++) {
+    for (i32 i=0; i<n; i++) {
         auto j = seg.max_right(0, [&] (int x) {
             return x <= b[i];
         });
@@ -2188,10 +2189,10 @@ void solve() {
         seg.set(j,0);
     }
     vs ans;
-    vi vis(n);
-    for (int i=0; i<n; i++) {
+    vector<bool> vis(n);
+    for (i32 i=0; i<n; i++) {
         if (vis[i]) continue;
-        int x = i;
+        i32 x = i;
         vi t;
         while (!vis[x]) {
             vis[x] = 1;
