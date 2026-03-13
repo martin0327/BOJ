@@ -2197,7 +2197,8 @@ void solve() {
         uf.merge(i,a[i]);
     }
     vi cnt(3);
-    map<int,int> l2x;
+    // map<int,int> l2x;
+    vi l2x(n, -1);
     for (int i=0; i<n; i++) {
         if (b[i].size()) {
             int x = b[i].back();
@@ -2212,7 +2213,7 @@ void solve() {
         auto i = qr.back();
         qr.pop_back();
         int l = uf.leader(i);
-        assert(l2x.count(l));
+        assert(l2x[l] != -1);
 
         int sz = uf.size(i);
         cnt[b[i].back()] -= sz;
@@ -2224,11 +2225,11 @@ void solve() {
         }
         else {
             if (uf.same(i,a[i])) {
-                if (l2x.count(l)) l2x.erase(l);
+                l2x[l] = -1;
             }
             else {
                 int l = uf.leader(a[i]);
-                if (l2x.count(l)) {
+                if (l2x[l] != -1) {
                     int x = l2x[l];
                     uf.merge(i,a[i]);
                     l = uf.leader(l);
@@ -2238,7 +2239,7 @@ void solve() {
                 else {
                     uf.merge(i,a[i]);
                     l = uf.leader(l);
-                    if (l2x.count(l)) l2x.erase(l);
+                    l2x[l] = -1;
                 }
             }
         }
