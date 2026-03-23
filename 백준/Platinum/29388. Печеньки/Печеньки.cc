@@ -2171,11 +2171,7 @@ signed main() {
 }
 
 using i32 = signed;
-using vi32 = vector<i32>;
-using vvi32 = vector<vi32>;
-const i32 inf = 2e9;
-const i32 maxn = 15;
-const i32 maxk = 5e6;
+const i32 inf = 2e9, maxn = 15, maxk = 5e6;
 i32 dp[maxk][2];
 bool vis[maxk][2];
 
@@ -2183,7 +2179,6 @@ void solve() {
     i32 n; ri(n);
     n *= 2;
     vector<i32> a(n); ri(a);
-    i32 k = int_pow(3,n);
     vi p3(n,1);
     for (int i=1; i<n; i++) {
         p3[i] = p3[i-1] * 3;
@@ -2192,27 +2187,10 @@ void solve() {
     memset(dp,0,sizeof(dp));
     memset(vis,0,sizeof(vis));
 
-    // vvi32 dp(k, vi32(2));
-    // vvi32 vis(k, vi32(2));
-
-    // auto g = [&] (i32 mask) {
-    //     i32 x = 0, y = 0;
-    //     vi idx;
-    //     for (i32 i=0; i<n; i++) {
-    //         i32 r = mask % 3;
-    //         if (r == 0) idx.push_back(i);
-    //         else if (r == 1) x += a[i];
-    //         else y += a[i];
-    //         mask /= 3;
-    //     }
-    //     return make_tuple(idx,x,y);
-    // };
-
     function<i32(i32,i32)> f = [&] (i32 mask, i32 j) {
-        i32 ret = 0;
-        vi check(n);
+        i32 ret = 0, sz = 0;
         i32 x = 0, y = 0;
-        i32 sz = 0;
+        vi check(n);
         {
             i32 cur = mask;
             for (i32 i=0; i<n; i++) {
@@ -2228,65 +2206,29 @@ void solve() {
         }
         if (sz == 0) return ret;
         if (vis[mask][j]) return dp[mask][j];
-        if (sz&1) {
-            if (j) {
-                ret = inf;
-                for (i32 i=0; i<n; i++) {
-                    if (!check[i]) continue;
-                    i32 nx = x;
-                    i32 ny = y + a[i];
-                    i32 nj = j^1;
-                    if (nx < ny) nj = 0;
-                    else if (nx > ny) nj = 1;
-                    i32 nmask = mask + p3[i]*2;
-                    chmin(ret, f(nmask,nj) - a[i]);
-                }
+
+        ret = j?inf:-inf;
+        for (i32 i=0; i<n; i++) {
+            if (!check[i]) continue;
+            i32 nx = x, ny = y, nj = j^1;
+            if (j) ny += a[i];
+            else nx += a[i];
+            if (sz&1) {
+                if (nx < ny) nj = 0;
+                if (nx > ny) nj = 1;
             }
-            else {
-                ret = -inf;
-                for (i32 i=0; i<n; i++) {
-                    if (!check[i]) continue;
-                    i32 nx = x + a[i];
-                    i32 ny = y;
-                    i32 nj = j^1;
-                    if (nx < ny) nj = 0;
-                    else if (nx > ny) nj = 1;
-                    i32 nmask = mask + p3[i];
-                    chmax(ret, f(nmask,nj) + a[i]);
-                }
-            }
-        }
-        else {
-            i32 nj = j^1;
-            if (j) {
-                ret = inf;
-                for (i32 i=0; i<n; i++) {
-                    if (!check[i]) continue;
-                    i32 nmask = mask + p3[i]*2;
-                    chmin(ret, f(nmask,nj) - a[i]);
-                }
-            }
-            else {
-                ret = -inf;
-                for (i32 i=0; i<n; i++) {
-                    if (!check[i]) continue;
-                    i32 nmask = mask + p3[i];
-                    chmax(ret, f(nmask,nj) + a[i]);
-                }
-            }
+            i32 nmask = mask + p3[i] * (j?2:1);
+            if (j) chmin(ret, f(nmask,nj) - a[i]);
+            else chmax(ret, f(nmask,nj) + a[i]);
         }
 
         vis[mask][j] = 1;
         return dp[mask][j] = ret;
     };
 
-    i32 tot = sum(a);
-
-    auto t = f(0,0);
-    i32 ans = (tot+t);
+    auto ans = f(0,0);
+    ans += sum(a);
     assert(ans % 2 == 0);
     ans /= 2;
     po(ans);
-
-    
 }
