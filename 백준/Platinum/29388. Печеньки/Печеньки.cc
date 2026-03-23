@@ -2170,15 +2170,15 @@ signed main() {
     return 0;
 }
 
-using i32 = signed;
-const i32 inf = 2e9, maxn = 15, maxk = 5e6;
-i32 dp[maxk][2];
+const int inf = 2e9, maxk = 5e6;
+int dp[maxk][2];
 bool vis[maxk][2];
 
 void solve() {
-    i32 n; ri(n);
+    int n; ri(n);
     n *= 2;
-    vector<i32> a(n); ri(a);
+    vi a(n); ri(a);
+
     vi p3(n,1);
     for (int i=1; i<n; i++) {
         p3[i] = p3[i-1] * 3;
@@ -2187,14 +2187,14 @@ void solve() {
     memset(dp,0,sizeof(dp));
     memset(vis,0,sizeof(vis));
 
-    function<i32(i32,i32)> f = [&] (i32 mask, i32 j) {
-        i32 ret = 0, sz = 0;
-        i32 x = 0, y = 0;
+    function<int(int,int)> f = [&] (int mask, int j) {
+        int ret = 0, sz = 0;
+        int x = 0, y = 0;
         vi check(n);
         {
-            i32 cur = mask;
-            for (i32 i=0; i<n; i++) {
-                i32 r = cur % 3;
+            int cur = mask;
+            for (int i=0; i<n; i++) {
+                int r = cur % 3;
                 if (r == 0) {
                     check[i] = 1;
                     sz++;
@@ -2208,16 +2208,16 @@ void solve() {
         if (vis[mask][j]) return dp[mask][j];
 
         ret = j?inf:-inf;
-        for (i32 i=0; i<n; i++) {
+        for (int i=0; i<n; i++) {
             if (!check[i]) continue;
-            i32 nx = x, ny = y, nj = j^1;
+            int nx = x, ny = y, nj = j^1;
             if (j) ny += a[i];
             else nx += a[i];
             if (sz&1) {
                 if (nx < ny) nj = 0;
                 if (nx > ny) nj = 1;
             }
-            i32 nmask = mask + p3[i] * (j?2:1);
+            int nmask = mask + p3[i] * (j?2:1);
             if (j) chmin(ret, f(nmask,nj) - a[i]);
             else chmax(ret, f(nmask,nj) + a[i]);
         }
