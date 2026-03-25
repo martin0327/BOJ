@@ -2284,45 +2284,33 @@ void solve() {
         int vid = lower_bound(V.begin(), V.end(), x) - V.begin();
         int hid = lower_bound(H.begin(), H.end(), y) - H.begin();
 
+        bool jump = false;
+        int j1 = vid, j2 = hid;
+        for (int i=m-1; i>=0; i--) {
+            if (j1 >= vsz || j2 >= hsz) break;
 
-        int lo = 1, hi = min(vsz-1-vid, hsz-1-hid), tg_cnt = 0, diff = 0;
-        int nvid = vid, nhid = hid; 
+            int nj1 = vsp[i][j1];
+            int nj2 = hsp[i][j2];
 
-        while (lo <= hi) {
-            int mid = (lo+hi)/2;
-            int j1 = vid;
-            int j2 = hid;
-
-            for (int i=m-1; i>=0; i--) {
-                if (j1 == inf || j2 == inf) break;
-                if (mid>>i&1) {
-                    j1 = vsp[i][j1];
-                    j2 = hsp[i][j2];
+            if (nj1 < vsz && nj2 < hsz) {
+                int tot = (V[nj1] - V[j1]) + (H[nj2] - H[j2]);
+                if (tot <= d) {
+                    d -= tot;
+                    j1 = nj1;
+                    j2 = nj2;
+                    jump = true;
                 }
             }
-            int tot = 0;
-            if (j1 != inf && j2 != inf) {
-                tot = V[j1] - V[vid];
-                tot += H[j2] - H[hid];
-            }
-            if (j1 != inf && j2 != inf && tot <= d) {
-                tg_cnt = mid;
-                diff = tot;
-                nvid = j1; 
-                nhid = j2; 
-                lo = mid + 1;
-            }
-            else hi = mid - 1;
         }
-        // debug(x,y,d,tg_cnt,diff);
-        if (tg_cnt > 0) {
-            vid = nvid;
-            hid = nhid;
-            x = V[vid];
-            y = H[hid];
-            d -= diff;
+
+        vid = j1;
+        hid = j2;
+
+        if (jump) {
+            if (vid < vsz) x = V[vid];
+            if (hid < hsz) y = H[hid];
         }
-        // debug(d0-d);
+
         if ((d0-d)&1) { // east first
             int nid = (vid<vsz) ? vsp[0][vid] : inf;
             if (nid < vsz) {
