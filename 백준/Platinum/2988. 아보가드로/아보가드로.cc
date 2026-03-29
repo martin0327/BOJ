@@ -2186,19 +2186,11 @@ void solve() {
             }
         }
         asort(t);
-        for (int j=0; j<n; j++) {
-            for (int i=0; i<3; i++) {
-                a[i][j] = t[j][i];
+        for (int i=0; i<n; i++) {
+            for (int j=0; j<3; j++) {
+                a[j][i] = t[i][j];
             }
         }
-    }
-    // for (auto &v : a) {
-    //     debug(v);
-    // }
-
-    map<int,int> inv;
-    for (int i=0; i<n; i++) {
-        inv[a[0][i]] = i;
     }
 
     auto scc = scc_graph(n);
@@ -2211,66 +2203,28 @@ void solve() {
 
     auto g = scc.scc();
     int ans = n;
+    vi check(n);
     for (auto &v : g) {
+        int sz = v.size();
         bool ok = true;
-        set<int> s(v.begin(), v.end());
-        set<int> sy, sz;
+        for (auto i : v) check[i] = 1;
+        vi vy, vz;
         for (auto x : v) {
             int y = a[1][x];
             int z = a[2][x];
-            ok &= s.count(y);
-            ok &= s.count(z);
-            sy.insert(y);
-            sz.insert(z);
+            ok &= check[y];
+            ok &= check[z];
+            vy.push_back(y);
+            vz.push_back(z);
         }
-        ok &= (sy.size() == v.size());
-        ok &= (sz.size() == v.size());
+        vy = get_unique(vy);
+        vz = get_unique(vz);
+        ok &= (vy.size() == sz);
+        ok &= (vz.size() == sz);
         if (ok) ans -= v.size();
+        for (auto i : v) check[i] = 0;
     }
     po(ans);
 
 
-    // vi check(n);
-    // for (int i=0; i<n; i++) {
-    //     if (check[i]) continue;
-    //     dsu uf(n);
-    //     vi vis(n);
-    //     queue<int> q;
-    //     q.push(i);
-    //     vis[i] = 1;
-    //     while (q.size()) {
-    //         auto j = q.front();
-    //         uf.merge(i,j);
-    //         q.pop();
-    //         for (auto nj : {inv[a[1][j]],inv[a[2][j]]}) {
-    //             if (vis[nj]) continue;
-    //             vis[nj] = 1;
-    //             q.push(nj);
-    //         }
-    //     }
-    //     debug(i);
-    //     debug(uf.groups());
-    //     // map<int,int> cnt;
-    //     vector<map<int,int>> cnt(3);
-    //     bool ok = true;
-    //     vi grp;
-    //     for (auto &v : uf.groups()) {
-    //         if (uf.same(i,v[0])) {
-    //             grp = v;
-    //             for (auto j : v) {
-    //                 for (int i=0; i<3; i++) {
-    //                     if (cnt[i][a[i][j]]) ok = false;
-    //                     cnt[i][a[i][j]]++;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     if (ok) {
-    //         for (auto j : grp) {
-    //             check[j] = 1;
-    //         }
-    //     }
-    // }
-    // int ans = n - sum(check);
-    // po(ans);
 }
