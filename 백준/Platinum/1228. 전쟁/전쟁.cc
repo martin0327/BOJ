@@ -2231,7 +2231,7 @@ void solve() {
     // }
     
     vi sub(n+1);
-    vvi dp(n+1, vi(n+1, inf));
+    vvi dp(n+1, vi(m+1, inf));
 
     function<void(int)> gsub = [&] (int u) {
         sub[u] = 1;
@@ -2246,22 +2246,20 @@ void solve() {
         dp[u][0] = 0;
         for (auto v : adj[u]) {
             f(v);
-            for (int i=n; i>=0; i--) {
+            for (int i=m; i>=0; i--) {
                 if (dp[u][i] == inf) continue;
-                for (int j=n; j>=0; j--) {
+                for (int j=m; j>=0; j--) {
                     if (dp[v][j] == inf) continue;
                     int cnt = i+j;
-                    if (cnt <= n) {
-                        chmin(dp[u][cnt], dp[u][i] + dp[v][j]);
-                    }
+                    chmin(cnt, m);
+                    chmin(dp[u][cnt], dp[u][i] + dp[v][j]);
                 }
             }
         }
-        if (sub[u] <= n) chmin(dp[u][sub[u]], a[u]);
+        chmin(dp[u][min(sub[u],m)], a[u]);
     };
     f(0);
-    int ans = inf;
-    for (int i=m; i<=n; i++) chmin(ans, dp[0][i]);
+    int ans = dp[0][m];
     po(ans);
 
 }
