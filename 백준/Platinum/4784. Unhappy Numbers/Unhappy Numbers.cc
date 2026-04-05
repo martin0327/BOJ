@@ -2173,9 +2173,10 @@ signed main() {
 const int lim = 81*18;
 const int maxn = 19;
 int dp[maxn][lim+5][2];
+bool vis[lim+1];
+bool check[lim+1];
 
 void solve() {
-    int lim = 9*9*18;
     auto f = [&] (int x) {
         int ret = 0;
         while (x > 0) {
@@ -2185,12 +2186,12 @@ void solve() {
         }
         return ret;
     };
-    vi check(lim+1);
+    memset(check,0,sizeof(check));
     for (int i=1; i<=lim; i++) {
+        memset(vis,0,sizeof(vis));
         auto x = i;
-        set<int> s;
-        while (!s.count(x)) {
-            s.insert(x);
+        while (!vis[x]) {
+            vis[x] = 1;
             if (x == 1) break;
             x = f(x);
         }
@@ -2201,7 +2202,6 @@ void solve() {
     while (true) {
         ri(lo,hi);
         if (lo == 0 && hi == 0) break;
-        debug(lo,hi);
         auto f = [&] (int val) {
             auto s = to_string(val);
             int n = s.size();
@@ -2232,11 +2232,9 @@ void solve() {
                 }
             }
             return ret;
-
         };
         auto ans = f(hi) - f(lo-1);
         po(ans);
-
 
     }
 }
